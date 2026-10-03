@@ -6,27 +6,21 @@
     <title>Sistem Tiket Soal Matematika</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         @keyframes slideDown {
             from { transform: translateY(-100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        .toast-animate {
-            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .toast-animate { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
 
-    <!-- Container Notifikasi Elegan -->
+    <!-- Container Notifikasi Toast -->
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-3 w-full max-w-md px-4 pointer-events-none"></div>
 
     <!-- Header -->
@@ -45,35 +39,33 @@
     <!-- Main Container -->
     <main class="max-w-6xl mx-auto px-6 py-8 w-full flex-grow">
         
-        <!-- Status & Notifikasi Banner -->
+        <!-- Status Banner -->
         <div id="status-message" class="mb-8 p-4 rounded-xl text-center font-medium text-sm hidden transition-all duration-300 border shadow-lg"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Kolom Kiri: Form Pengisian -->
+            <!-- Kolom Kiri: Form Pilih Siswa & Soal -->
             <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
                 <div class="mb-6">
-                    <h2 class="text-xl font-semibold tracking-tight text-white">Ambil Soal</h2>
-                    <p class="text-sm text-slate-400 mt-1">Pilih nomor soal yang belum diklaim.</p>
+                    <h2 class="text-xl font-semibold tracking-tight text-white">Pilih Soal Kamu</h2>
+                    <p class="text-sm text-slate-400 mt-1">Pilih nama siswa dan nomor soal yang tersedia.</p>
                 </div>
 
                 <form id="ticket-form" class="space-y-5">
                     <div>
-                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Nama Penjawab</label>
-                        <input type="text" id="nama" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition" required placeholder="Masukkan nama lengkap...">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Nomor Absen</label>
-                        <input type="number" id="absen" min="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition" required placeholder="Contoh: 15">
+                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nama Siswa (Absen)</label>
+                        <select id="siswa-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition cursor-pointer" required>
+                            <option value="" disabled selected>-- Pilih Nama Kamu --</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nomor Soal</label>
-                        <select id="nomor-soal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition cursor-pointer" required>
+                        <select id="nomor-soal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition cursor-pointer" required>
                             <option value="" disabled selected>-- Memuat Daftar Soal --</option>
                         </select>
                     </div>
                     <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-blue-600/20 disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed text-sm">
-                        Kirim Jawaban
+                        Ambil Soal
                     </button>
                 </form>
             </div>
@@ -111,7 +103,7 @@
 
         </div>
 
-        <!-- Tombol Trigger Akses Admin -->
+        <!-- Tombol Trigger Admin -->
         <div class="mt-12 text-center">
             <button id="btn-login-admin" class="text-xs text-slate-500 hover:text-slate-300 transition tracking-wider uppercase font-medium">
                 Panel Kontrol Admin
@@ -130,11 +122,11 @@
                 </button>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
                         <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Soal</label>
-                        <p class="text-xs text-slate-500 mb-3">Tentukan batas maksimal nomor pertanyaan.</p>
+                        <p class="text-xs text-slate-500 mb-3">Batas maksimal nomor pertanyaan.</p>
                     </div>
                     <div class="flex gap-2">
                         <input type="number" id="total-soal-input" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500 text-center">
@@ -145,7 +137,7 @@
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
                         <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Akses Formulir</label>
-                        <p class="text-xs text-slate-500 mb-3">Buka form dengan jeda 5 detik atau tutup langsung.</p>
+                        <p class="text-xs text-slate-500 mb-3">Admin tetap bisa mengisi walau form dikunci.</p>
                     </div>
                     <div class="flex gap-2">
                         <button id="btn-open" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-semibold transition">Buka (5s)</button>
@@ -155,11 +147,20 @@
 
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
-                        <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Reset Responden</label>
-                        <p class="text-xs text-slate-500 mb-3">Menghapus seluruh data siswa yang sudah masuk.</p>
+                        <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Reset Sesi Saja</label>
+                        <p class="text-xs text-slate-500 mb-3">Mengosongkan nomor soal tanpa menghapus database siswa.</p>
                     </div>
-                    <button id="btn-reset" class="w-full bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/20 py-2 rounded-lg text-xs font-semibold transition">Hapus Semua Data</button>
+                    <button id="btn-reset" class="w-full bg-amber-600/10 hover:bg-amber-600/20 text-amber-400 border border-amber-500/20 py-2 rounded-lg text-xs font-semibold transition">Reset Pilihan Soal</button>
                 </div>
+            </div>
+
+            <!-- Kolom Khusus Admin: Salin Format (nomor pilihan_nama_absen) -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Format Salin Cepat (nomor_pilihan_nama_absen)</label>
+                    <button id="btn-copy-format" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition font-medium">Salin Teks</button>
+                </div>
+                <textarea id="admin-export-textarea" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none" readonly placeholder="Data akan muncul otomatis di sini..."></textarea>
             </div>
         </div>
     </main>
@@ -194,7 +195,46 @@
         const ticketsCol = collection(db, "tickets");
         const configDoc = doc(db, "settings", "main");
 
-        // Generate ID unik untuk perangkat ini (jika belum ada)
+        // Daftar 36 siswa SMAN 8 Jakarta
+        const siswaList = [
+            { absen: 1, nama: "Abdul Danish" },
+            { absen: 2, nama: "Ahmad Sauqy Murobby" },
+            { absen: 3, nama: "Akhtar Kareem Amien" },
+            { absen: 4, nama: "Aksya Al Maidah" },
+            { absen: 5, nama: "Alya adzania Rahma" },
+            { absen: 6, nama: "Aretha Quaneisa" },
+            { absen: 7, nama: "Ayumiko Ticoalu" },
+            { absen: 8, nama: "Azka Danish Maesa" },
+            { absen: 9, nama: "Bintang Azighah Chaerany" },
+            { absen: 10, nama: "Ciqala Avery Tertiana" },
+            { absen: 11, nama: "Dinda Putri Hasanah Daulay" },
+            { absen: 12, nama: "Fanya Aulia Ruubi" },
+            { absen: 13, nama: "Faris Kemal" },
+            { absen: 14, nama: "Ghaniyya Putri Dias" },
+            { absen: 15, nama: "Ghina Raudhatul Jannah" },
+            { absen: 16, nama: "Hani Nurfadilla" },
+            { absen: 17, nama: "Haura Khalishah Aqila" },
+            { absen: 18, nama: "Hosni" },
+            { absen: 19, nama: "Ikhlas Radhitya Withly" },
+            { absen: 20, nama: "Jean Kenzani" },
+            { absen: 21, nama: "Jennie Raissa Fujiani" },
+            { absen: 22, nama: "Joyce Charlotta M" },
+            { absen: 23, nama: "Lavina Izzati Syahdan" },
+            { absen: 24, nama: "Moudy Queen Sabrina" },
+            { absen: 25, nama: "Muhammad Faiz Akbar" },
+            { absen: 26, nama: "Muhammad Rajib Putra" },
+            { absen: 27, nama: "Nazwa Alfatunissa" },
+            { absen: 28, nama: "Ocktavia Ananta Sari" },
+            { absen: 29, nama: "Queensa Shaliha Khadijah" },
+            { absen: 30, nama: "Raihana Erumy" },
+            { absen: 31, nama: "Rashya Alvidiano Prakoso" },
+            { absen: 32, nama: "Reva Dharmagati Fatayan" },
+            { absen: 33, nama: "Sultan Syahran Ghaisan" },
+            { absen: 34, nama: "Vino Apriliansyah" },
+            { absen: 35, nama: "Wilbert Seno" },
+            { absen: 36, nama: "Zayana Awwaliya" }
+        ];
+
         let deviceToken = localStorage.getItem("device_token");
         if (!deviceToken) {
             deviceToken = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -204,11 +244,11 @@
         let totalSoal = 0;
         let isLocked = true;
         let claimedTickets = [];
+        let isAdminLoggedIn = false;
         let countdownInterval;
 
         const form = document.getElementById("ticket-form");
-        const inputNama = document.getElementById("nama");
-        const inputAbsen = document.getElementById("absen");
+        const selectSiswa = document.getElementById("siswa-select");
         const selectSoal = document.getElementById("nomor-soal");
         const dashboard = document.getElementById("dashboard-list");
         const statusMessage = document.getElementById("status-message");
@@ -222,31 +262,31 @@
         const btnOpen = document.getElementById("btn-open");
         const btnClose = document.getElementById("btn-close");
         const btnReset = document.getElementById("btn-reset");
+        const exportTextarea = document.getElementById("admin-export-textarea");
+        const btnCopyFormat = document.getElementById("btn-copy-format");
+
+        function populateSiswaDropdown() {
+            selectSiswa.innerHTML = '<option value="" disabled selected>-- Pilih Nama Kamu --</option>';
+            siswaList.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.absen;
+                opt.textContent = `${s.absen} - ${s.nama}`;
+                selectSiswa.appendChild(opt);
+            });
+        }
+        populateSiswaDropdown();
 
         function showToast(message, type = "success") {
             const container = document.getElementById("toast-container");
             const toast = document.createElement("div");
+            let bgClass = "bg-slate-900/95 border-emerald-500/30 text-slate-100";
+            let dotClass = "bg-emerald-500";
             
-            let bgClass = "bg-slate-900 border-slate-700 text-slate-200";
-            let dotClass = "bg-blue-500";
-            
-            if (type === "success") {
-                bgClass = "bg-slate-900/95 border-emerald-500/30 text-slate-100 shadow-emerald-500/10";
-                dotClass = "bg-emerald-500";
-            } else if (type === "error") {
-                bgClass = "bg-slate-900/95 border-red-500/30 text-slate-100 shadow-red-500/10";
-                dotClass = "bg-red-500";
-            } else if (type === "warning") {
-                bgClass = "bg-slate-900/95 border-amber-500/30 text-slate-100 shadow-amber-500/10";
-                dotClass = "bg-amber-500";
-            }
+            if (type === "error") { bgClass = "bg-slate-900/95 border-red-500/30 text-slate-100"; dotClass = "bg-red-500"; }
+            else if (type === "warning") { bgClass = "bg-slate-900/95 border-amber-500/30 text-slate-100"; dotClass = "bg-amber-500"; }
 
             toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md toast-animate ${bgClass}`;
-            toast.innerHTML = `
-                <div class="h-2.5 w-2.5 rounded-full ${dotClass} flex-shrink-0 animate-pulse"></div>
-                <div class="text-sm font-medium tracking-wide flex-grow">${message}</div>
-            `;
-
+            toast.innerHTML = `<div class="h-2.5 w-2.5 rounded-full ${dotClass} flex-shrink-0 animate-pulse"></div><div class="text-sm font-medium tracking-wide flex-grow">${message}</div>`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.transition = "all 0.3s ease";
@@ -257,27 +297,22 @@
         }
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                if (user.email === ADMIN_EMAIL) {
-                    adminPanel.classList.remove("hidden");
-                    btnLoginAdmin.classList.add("hidden");
-                    showToast("Berhasil masuk sebagai Admin.", "success");
-                } else {
-                    showToast("Akses ditolak: Akun bukan otoritas Admin.", "error");
-                    signOut(auth);
-                    adminPanel.classList.add("hidden");
-                    btnLoginAdmin.classList.remove("hidden");
-                }
+            if (user && user.email === ADMIN_EMAIL) {
+                isAdminLoggedIn = true;
+                adminPanel.classList.remove("hidden");
+                btnLoginAdmin.classList.add("hidden");
+                enableFormInputs();
+                showToast("Berhasil masuk sebagai Admin.", "success");
             } else {
+                isAdminLoggedIn = false;
                 adminPanel.classList.add("hidden");
                 btnLoginAdmin.classList.remove("hidden");
+                if (user) signOut(auth);
             }
         });
 
         btnLoginAdmin.addEventListener("click", () => {
-            signInWithPopup(auth, provider).catch((error) => {
-                showToast("Login dibatalkan.", "error");
-            });
+            signInWithPopup(auth, provider).catch(() => showToast("Login dibatalkan.", "error"));
         });
 
         btnLogout.addEventListener("click", () => {
@@ -286,18 +321,17 @@
         });
 
         function disableFormInputs() {
-            inputNama.disabled = true; 
-            inputAbsen.disabled = true;
-            selectSoal.disabled = true; 
+            if (isAdminLoggedIn) return;
+            selectSiswa.disabled = true;
+            selectSoal.disabled = true;
             btnSubmit.disabled = true;
         }
 
         function enableFormInputs() {
-            inputNama.disabled = false; 
-            inputAbsen.disabled = false;
-            selectSoal.disabled = false; 
+            selectSiswa.disabled = false;
+            selectSoal.disabled = false;
             btnSubmit.disabled = false;
-            btnSubmit.innerText = "Kirim Jawaban";
+            btnSubmit.innerText = "Ambil Soal";
         }
 
         onSnapshot(configDoc, (snapshot) => {
@@ -310,18 +344,16 @@
                 inputTotalSoal.value = totalSoal;
                 clearInterval(countdownInterval);
 
-                if (isLocked) {
+                if (isLocked && !isAdminLoggedIn) {
                     statusMessage.className = "mb-8 p-4 rounded-xl text-center font-medium text-sm border bg-red-500/10 border-red-500/20 text-red-400";
                     statusMessage.innerText = "Formulir pengisian sedang ditutup oleh Admin.";
                     statusMessage.classList.remove("hidden");
-                    
                     disableFormInputs();
                     btnSubmit.innerText = "Form Ditutup";
-                    form.reset();
                     updateDropdown();
-                } else {
+                } else if (!isLocked) {
                     const now = Date.now();
-                    if (now < unlockTime) {
+                    if (now < unlockTime && !isAdminLoggedIn) {
                         disableFormInputs();
                         btnSubmit.innerText = "Bersiap...";
                         statusMessage.className = "mb-8 p-4 rounded-xl text-center font-medium text-sm border bg-amber-500/10 border-amber-500/20 text-amber-400";
@@ -353,13 +385,20 @@
             claimedTickets = [];
             dashboard.innerHTML = "";
             const dataDocs = [];
+            let exportLines = [];
 
             snapshot.forEach((doc) => {
                 const docData = doc.data();
-                dataDocs.push({ id: parseInt(doc.id), ...docData });
-                claimedTickets.push(parseInt(doc.id));
+                const soalNo = parseInt(doc.id);
+                dataDocs.push({ id: soalNo, ...docData });
+                claimedTickets.push(soalNo);
+
+                exportLines.push(`${soalNo}_${docData.nama}_${docData.absen}`);
             });
+            
             dataDocs.sort((a, b) => a.id - b.id);
+            exportLines.sort((a, b) => parseInt(a.split('_')[0]) - parseInt(b.split('_')[0]));
+            exportTextarea.value = exportLines.join('\n');
             
             if (dataDocs.length === 0) {
                 dashboard.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-500">Belum ada responden yang memilih soal.</td></tr>`;
@@ -368,12 +407,11 @@
                     const tr = document.createElement("tr");
                     tr.className = "hover:bg-slate-900/50 transition";
                     
-                    // Validasi kepemilikan murni berdasarkan Device Token dari server
                     const isMyClaim = (data.deviceToken === deviceToken);
                     let actionHtml = `<span class="text-slate-600 text-xs italic">Terkunci</span>`;
 
-                    if (isMyClaim) {
-                        actionHtml = `<button onclick="cancelClaim(${data.id})" ${isLocked ? 'disabled' : ''} class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed">Batalkan</button>`;
+                    if (isMyClaim || isAdminLoggedIn) {
+                        actionHtml = `<button onclick="cancelClaim(${data.id})" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-1 rounded-lg text-xs font-semibold transition">Batalkan</button>`;
                     }
 
                     tr.innerHTML = `
@@ -388,21 +426,15 @@
             updateDropdown();
         });
 
-        // Fungsi Global Batalkan (Menggunakan pengecekan kepemilikan server-side)
         window.cancelClaim = async function(soalId) {
-            if (isLocked) {
-                showToast("Form sedang ditutup, pembatalan dibatasi.", "warning");
-                return;
-            }
-
             const docRef = doc(db, "tickets", soalId.toString());
             try {
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().deviceToken === deviceToken) {
+                if (docSnap.exists() && (docSnap.data().deviceToken === deviceToken || isAdminLoggedIn)) {
                     await deleteDoc(docRef);
                     showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan.`, "success");
                 } else {
-                    showToast("Aksi ditolak: Soal ini bukan milik perangkat Anda.", "error");
+                    showToast("Aksi ditolak.", "error");
                 }
             } catch (error) {
                 showToast("Gagal membatalkan pilihan.", "error");
@@ -430,17 +462,35 @@
             }
         }
 
-        // 3. SUBMIT DENGAN ATOMIC TRANSACTION (Sistem Rebutan Adil / First-Come First-Served)
+        async function checkAlreadyClaimed(absen) {
+            const querySnapshot = await getDocs(ticketsCol);
+            let already = false;
+            querySnapshot.forEach((doc) => {
+                if (parseInt(doc.data().absen) === parseInt(absen)) {
+                    already = true;
+                }
+            });
+            return already;
+        }
+
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            if (inputNama.disabled || selectSoal.disabled) return;
+            if ((selectSiswa.disabled || selectSoal.disabled) && !isAdminLoggedIn) return;
             
-            const nama = inputNama.value.trim();
-            const absen = inputAbsen.value;
+            const absenVal = parseInt(selectSiswa.value);
             const soalDipilih = parseInt(selectSoal.value);
             
-            if (!soalDipilih) {
-                showToast("Silakan pilih nomor soal terlebih dahulu.", "warning");
+            if (!absenVal || !soalDipilih) {
+                showToast("Pilih nama siswa dan nomor soal terlebih dahulu.", "warning");
+                return;
+            }
+
+            const selectedSiswaObj = siswaList.find(s => s.absen === absenVal);
+            const namaSiswa = selectedSiswaObj ? selectedSiswaObj.nama : "Unknown";
+
+            const hasTaken = await checkAlreadyClaimed(absenVal);
+            if (hasTaken && !isAdminLoggedIn) {
+                showToast(`Siswa ${namaSiswa} (Absen ${absenVal}) sudah mengambil satu soal!`, "warning");
                 return;
             }
 
@@ -450,33 +500,35 @@
             const ticketRef = doc(db, "tickets", soalDipilih.toString());
 
             try {
-                // Menggunakan Firestore Transaction agar dijamin tidak ada bentrok rebutan
                 await runTransaction(db, async (transaction) => {
                     const ticketDoc = await transaction.get(ticketRef);
                     if (ticketDoc.exists()) {
                         throw new Error("ALREADY_CLAIMED");
                     }
                     transaction.set(ticketRef, {
-                        nama: nama,
-                        absen: absen,
-                        deviceToken: deviceToken, // Disimpan langsung di database untuk validasi anti-nyolong
+                        nama: namaSiswa,
+                        absen: absenVal,
+                        deviceToken: deviceToken,
                         timestamp: new Date()
                     });
                 });
 
+                // Jika BERHASIL: baru reset seluruh form (termasuk nama siswa)
                 form.reset();
-                showToast(`Berhasil mengamankan Soal No. ${soalDipilih}!`, "success");
+                showToast(`Berhasil mengamankan Soal No. ${soalDipilih} untuk ${namaSiswa}!`, "success");
             } catch (error) {
                 if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
-                    showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain detik ini.`, "error");
+                    // Jika GAGAL (keduluan orang lain): HANYA reset dropdown nomor soal saja, NAMA SISWA TETAP ADA!
+                    selectSoal.value = ""; 
+                    showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain. Silakan pilih nomor lain.`, "error");
                 } else {
-                    showToast("Gagal mengirim data. Periksa koneksi internet.", "error");
+                    showToast("Gagal mengirim data. Periksa koneksi.", "error");
                 }
-                updateDropdown(); // Refresh dropdown agar pilihan yang sudah habis langsung hilang
+                updateDropdown();
             } finally {
-                if(!isLocked) {
+                if(!isLocked || isAdminLoggedIn) {
                     btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Kirim Jawaban";
+                    btnSubmit.innerText = "Ambil Soal";
                 }
             }
         });
@@ -503,10 +555,10 @@
         });
         
         btnReset.addEventListener("click", async () => {
-            const confirmReset = confirm("Yakin ingin menghapus seluruh data responden?");
+            const confirmReset = confirm("Reset kilat: Kosongkan semua nomor soal yang dipilih untuk sesi berikutnya?");
             if (!confirmReset) return;
             
-            btnReset.innerText = "Menghapus..."; 
+            btnReset.innerText = "Mereset..."; 
             btnReset.disabled = true;
             try {
                 const querySnapshot = await getDocs(ticketsCol);
@@ -515,13 +567,23 @@
                     deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                 });
                 await Promise.all(deletePromises);
-                showToast("Seluruh data responden berhasil dibersihkan.", "success");
+                showToast("Pilihan soal berhasil dikosongkan untuk sesi baru.", "success");
             } catch (error) {
-                showToast("Terjadi kesalahan saat menghapus data.", "error");
+                showToast("Terjadi kesalahan saat mereset.", "error");
             } finally {
-                btnReset.innerText = "Hapus Semua Data"; 
+                btnReset.innerText = "Reset Pilihan Soal"; 
                 btnReset.disabled = false;
             }
+        });
+
+        btnCopyFormat.addEventListener("click", () => {
+            if (!exportTextarea.value) {
+                showToast("Tidak ada data untuk disalin.", "warning");
+                return;
+            }
+            exportTextarea.select();
+            document.execCommand("copy");
+            showToast("Format berhasil disalin ke clipboard!", "success");
         });
     </script>
 </body>
