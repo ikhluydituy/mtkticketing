@@ -87,11 +87,12 @@
                                 <th class="py-3 px-4 text-center w-20 font-semibold">No. Soal</th>
                                 <th class="py-3 px-4 font-semibold">Nama Penjawab</th>
                                 <th class="py-3 px-4 text-center w-24 font-semibold">Absen</th>
+                                <th class="py-3 px-4 text-center w-28 font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="dashboard-list" class="divide-y divide-slate-800/50 text-sm">
                             <tr>
-                                <td colspan="3" class="py-8 text-center text-slate-500">Memuat data dari server...</td>
+                                <td colspan="4" class="py-8 text-center text-slate-500">Memuat data dari server...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -305,27 +306,67 @@
             claimedTickets = [];
             dashboard.innerHTML = "";
             const dataDocs = [];
+            
+            // Ambil data soal yang diklaim oleh device ini dari LocalStorage
+            let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
+
             snapshot.forEach((doc) => {
                 dataDocs.push({ id: parseInt(doc.id), ...doc.data() });
                 claimedTickets.push(parseInt(doc.id));
             });
             dataDocs.sort((a, b) => a.id - b.id);
+            
             if (dataDocs.length === 0) {
-                dashboard.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-slate-500">Belum ada responden yang memilih soal.</td></tr>`;
+                dashboard.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-500">Belum ada responden yang memilih soal.</td></tr>`;
             } else {
                 dataDocs.forEach((data) => {
                     const tr = document.createElement("tr");
                     tr.className = "hover:bg-slate-900/50 transition";
+                    
+                    // Cek apakah soal ini diklaim oleh browser ini
+                    const isMyClaim = myClaimedSoal.includes(data.id);
+                    let actionHtml = `<span class="text-slate-600 text-xs italic">Terkunci</span>`;
+
+                    if (isMyClaim) {
+                        actionHtml = `<button onclick="cancelClaim(${data.id})" ${isLocked ? 'disabled' : ''} class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed">Batalkan</button>`;
+                    }
+
                     tr.innerHTML = `
                         <td class="py-3 px-4 text-center font-semibold text-blue-400">#${data.id}</td>
                         <td class="py-3 px-4 text-slate-200 font-medium">${data.nama}</td>
                         <td class="py-3 px-4 text-center text-slate-400">${data.absen}</td>
+                        <td class="py-3 px-4 text-center">${actionHtml}</td>
                     `;
                     dashboard.appendChild(tr);
                 });
             }
             updateDropdown();
         });
+
+        // Fungsi Global untuk Membatalkan Pilihan Soal
+        window.cancelClaim = async function(soalId) {
+            if (isLocked) {
+                alert("Form sedang ditutup, pembatalan dibatasi.");
+                return;
+            }
+
+            const confirmCancel = confirm(`Yakin ingin membatalkan pilihan untuk Soal No. ${soalId}? Soal akan kembali tersedia.`);
+            if (!confirmCancel) return;
+
+            try {
+                // Hapus data dari Firebase Firestore
+                await deleteDoc(doc(db, "tickets", soalId.toString()));
+
+                // Hapus dari LocalStorage perangkat ini
+                let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
+                myClaimedSoal = myClaimedSoal.filter(id => id !== soalId);
+                localStorage.setItem("my_claims", JSON.stringify(myClaimedSoal));
+
+            } catch (error) {
+                console.error("Gagal membatalkan:", error);
+                alert("Terjadi kesalahan saat membatalkan pilihan.");
+            }
+        }
 
         function updateDropdown() {
             const currentValue = selectSoal.value;
@@ -353,7 +394,7 @@
             if (inputNama.disabled || selectSoal.disabled) return;
             const nama = inputNama.value.trim();
             const absen = inputAbsen.value;
-            const soalDipilih = selectSoal.value;
+            const soalDipilih = parseInt(selectSoal.value);
             if (!soalDipilih) return alert("Silakan pilih nomor soal.");
 
             btnSubmit.disabled = true;
@@ -362,6 +403,14 @@
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
                     nama: nama, absen: absen, timestamp: new Date()
                 });
+
+                // Simpan ID soal ke LocalStorage perangkat ini agar tombol "Batalkan" muncul
+                let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
+                if (!myClaimedSoal.includes(soalDipilih)) {
+                    myClaimedSoal.push(soalDipilih);
+                    localStorage.setItem("my_claims", JSON.stringify(myClaimedSoal));
+                }
+
                 form.reset();
             } catch (error) {
                 alert("Gagal mengirim data. Periksa koneksi.");
@@ -395,6 +444,10 @@
                     deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                 });
                 await Promise.all(deletePromises);
+                
+                // Kosongkan riwayat lokal juga
+                localStorage.removeItem("my_claims");
+
                 alert("Data berhasil dibersihkan.");
             } finally {
                 btnReset.innerText = "Hapus Semua Data"; btnReset.disabled = false;
