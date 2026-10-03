@@ -1,190 +1,173 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Tiket Soal — The Phantoms</title>
+    <title>Sistem Tiket Soal Matematika</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&family=Anton&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* TEMA PERSONA 5 */
         body {
-            background-color: #0a0a0a;
-            background-image: radial-gradient(#333 1px, transparent 1px);
-            background-size: 15px 15px;
-            font-family: 'Special Elite', monospace;
-            color: #fff;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
         }
-
-        h1, h2, .font-marker { font-family: 'Permanent Marker', cursive; }
-        .font-anton { font-family: 'Anton', sans-serif; letter-spacing: 1px; }
-
-        .top-right-decor {
-            position: absolute; top: 20px; right: 30px;
-            background: #000; color: #fff;
-            font-family: 'Permanent Marker', cursive;
-            padding: 5px 15px; font-size: 20px;
-            transform: rotate(4deg); border: 3px solid #fff;
-            box-shadow: -4px 4px 0 #e0000b; z-index: 10;
-        }
-
-        .p5-container {
-            background: #000; border: 4px solid #e0000b;
-            clip-path: polygon(1% 0%, 100% 2%, 98% 100%, 0% 98%);
-            position: relative;
-        }
-        .p5-container::after {
-            content: ''; position: absolute;
-            top: 3px; right: 3px; bottom: 3px; left: 3px;
-            background: #111; clip-path: polygon(2% 4%, 96% 3%, 98% 94%, 4% 96%);
-            z-index: -1;
-        }
-
-        .p5-input {
-            background: #fff; color: #000; border: 3px solid #000;
-            box-shadow: 4px 4px 0 #e0000b; transform: skewX(-3deg);
-            border-radius: 0; font-weight: bold;
-        }
-        .p5-input:focus { outline: none; background: #ffe6e6; box-shadow: 4px 4px 0 #000; }
-        .p5-input:disabled { background: #555; color: #222; box-shadow: 4px 4px 0 #222; cursor: not-allowed; border-color: #333; }
-
-        .p5-btn {
-            background: #e0000b; color: #fff; border: 2px solid #fff;
-            transform: skewX(-10deg) rotate(-1deg); box-shadow: -3px 3px 0 #000;
-            text-transform: uppercase; transition: all 0.2s ease;
-        }
-        .p5-btn:hover:not(:disabled) {
-            background: #fff; color: #e0000b; box-shadow: -4px 4px 0 #e0000b;
-            transform: skewX(-10deg) rotate(0deg) scale(1.02);
-        }
-        .p5-btn:disabled { background: #333; color: #777; border-color: #555; box-shadow: none; }
-
-        .p5-table th { background: #e0000b; color: #fff; font-family: 'Anton', sans-serif; border-bottom: 3px solid #fff; letter-spacing: 1px; }
-        .p5-table tr { border-bottom: 1px solid #333; transition: all 0.2s; }
-        .p5-table tr:hover { background: rgba(224, 0, 11, 0.2); }
-        .p5-table td { color: #ddd; }
-        .p5-table .td-highlight { color: #e0000b; font-weight: bold; font-family: 'Anton', sans-serif; font-size: 1.2rem;}
-
-        .status-box { clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%); transform: rotate(-1deg); }
-        
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid #e0000b; }
-        ::-webkit-scrollbar-thumb { background: #e0000b; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
 
-    <div class="top-right-decor hidden md:block">SMAN 8 JAKARTA LOG</div>
-
-    <div class="max-w-6xl mx-auto">
-        
-        <!-- HEADER -->
-        <div class="text-center mb-8 relative">
-            <h1 class="text-5xl md:text-6xl text-red-600 mb-2 transform -rotate-2 drop-shadow-[3px_3px_0_#fff]">TICKETING SOAL</h1>
-            <p class="font-anton text-xl tracking-widest text-gray-400 transform skew-x-[-10deg]">METAVERSE OPERATION // MATHEMATICS</p>
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="h-3 w-3 rounded-full bg-blue-500 animate-pulse"></div>
+                <h1 class="font-semibold text-lg tracking-tight text-slate-200">Sistem Tiket Soal Matematika</h1>
+            </div>
+            <div class="text-xs text-slate-400 font-medium bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/50">
+                SMAN 8 Jakarta
+            </div>
         </div>
+    </header>
 
-        <!-- Status & Notifikasi -->
-        <div id="status-message" class="status-box mb-8 p-4 text-center font-bold text-2xl font-anton uppercase hidden border-4 border-black"></div>
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-6 py-8 w-full flex-grow">
+        
+        <!-- Status & Notifikasi Banner -->
+        <div id="status-message" class="mb-8 p-4 rounded-xl text-center font-medium text-sm hidden transition-all duration-300 border shadow-lg"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- KIRI: Form User -->
-            <div class="lg:col-span-5 p5-container p-6 shadow-[8px_8px_0_#000]">
-                <h2 class="text-3xl text-white mb-6 transform -rotate-2 drop-shadow-[2px_2px_0_#e0000b]">TAKE YOUR TARGET</h2>
-                
-                <form id="ticket-form" class="flex flex-col gap-5">
+            <!-- Kolom Kiri: Form Pengisian (Span 5) -->
+            <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold tracking-tight text-white">Ambil Soal</h2>
+                    <p class="text-sm text-slate-400 mt-1">Pilih nomor soal yang belum diklaim.</p>
+                </div>
+
+                <form id="ticket-form" class="space-y-5">
                     <div>
-                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">CODENAME (NAMA)</label>
-                        <input type="text" id="nama" class="w-full p-3 p5-input" required placeholder="Masukkan namamu...">
+                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Nama Penjawab</label>
+                        <input type="text" id="nama" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition" required placeholder="Masukkan nama lengkap...">
                     </div>
                     <div>
-                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">ID NUMBER (ABSEN)</label>
-                        <input type="number" id="absen" min="1" class="w-full p-3 p5-input" required placeholder="Contoh: 15">
+                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Nomor Absen</label>
+                        <input type="number" id="absen" min="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition" required placeholder="Contoh: 15">
                     </div>
                     <div>
-                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">TARGET (NO. SOAL)</label>
-                        <select id="nomor-soal" class="w-full p-3 p5-input cursor-pointer" required>
-                            <option value="" disabled selected>-- SECURING DATA... --</option>
+                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nomor Soal</label>
+                        <select id="nomor-soal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 disabled:cursor-not-allowed transition cursor-pointer" required>
+                            <option value="" disabled selected>-- Memuat Daftar Soal --</option>
                         </select>
                     </div>
-                    <button type="submit" id="submit-btn" class="mt-4 p-4 text-2xl font-anton p5-btn w-full">AMBIL SOAL</button>
+                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-blue-600/20 disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed text-sm">
+                        Kirim Jawaban
+                    </button>
                 </form>
             </div>
 
-            <!-- KANAN: Live Dashboard -->
-            <div class="lg:col-span-7 p5-container p-6 shadow-[8px_8px_0_#000]">
-                <h2 class="text-3xl text-white mb-6 transform rotate-1 drop-shadow-[2px_2px_0_#e0000b]">PHANTOM OPERATIVES</h2>
-                
-                <div class="overflow-y-auto max-h-[400px] border-2 border-red-600 bg-black p-1">
-                    <table class="w-full text-left border-collapse p5-table">
-                        <thead class="sticky top-0 z-10">
+            <!-- Kolom Kanan: Live Dashboard Table (Span 7) -->
+            <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold tracking-tight text-white">Live Dashboard</h2>
+                        <p class="text-sm text-slate-400 mt-1">Daftar siswa yang telah mengamankan soal.</p>
+                    </div>
+                    <div class="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-medium">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> Real-time
+                    </div>
+                </div>
+
+                <div class="overflow-y-auto max-h-[400px] border border-slate-800 rounded-xl bg-slate-950/50">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="sticky top-0 bg-slate-900/90 backdrop-blur border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
                             <tr>
-                                <th class="p-4 text-center w-24">NO. SOAL</th>
-                                <th class="p-4">CODENAME</th>
-                                <th class="p-4 text-center w-24">ABSEN</th>
+                                <th class="py-3 px-4 text-center w-20 font-semibold">No. Soal</th>
+                                <th class="py-3 px-4 font-semibold">Nama Penjawab</th>
+                                <th class="py-3 px-4 text-center w-24 font-semibold">Absen</th>
                             </tr>
                         </thead>
-                        <tbody id="dashboard-list">
-                            <tr><td colspan="3" class="p-6 text-center text-gray-500 font-bold font-anton tracking-widest text-xl">INTERCEPTING SIGNALS...</td></tr>
+                        <tbody id="dashboard-list" class="divide-y divide-slate-800/50 text-sm">
+                            <tr>
+                                <td colspan="3" class="py-8 text-center text-slate-500">Memuat data dari server...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
 
-        <!-- Tombol Login Admin -->
-        <div class="mt-12 text-right relative z-20">
-            <button id="btn-login-admin" class="font-anton text-gray-600 hover:text-red-500 text-lg tracking-widest transition uppercase">>>> AUTHENTICATE ADMIN</button>
+        <!-- Tombol Trigger Akses Admin -->
+        <div class="mt-12 text-center">
+            <button id="btn-login-admin" class="text-xs text-slate-500 hover:text-slate-300 transition tracking-wider uppercase font-medium">
+                Panel Kontrol Admin
+            </button>
         </div>
 
-        <!-- Panel Admin -->
-        <div id="admin-panel" class="hidden mt-6 p5-container p-6 border-white bg-gray-900 shadow-[5px_5px_0_#e0000b]">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl text-red-500 font-anton">NAVIGATOR CONTROLS</h2>
-                <button id="btn-logout" class="text-xs bg-gray-700 hover:bg-red-600 text-white font-anton px-3 py-1 border border-white">LOGOUT ADMIN</button>
+        <!-- Panel Admin (Tersembunyi by default) -->
+        <div id="admin-panel" class="hidden mt-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+                <div>
+                    <h3 class="font-semibold text-slate-200">Admin Control Center</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Otorisasi terverifikasi via Google Account</p>
+                </div>
+                <button id="btn-logout" class="text-xs bg-slate-800 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition font-medium">
+                    Keluar Admin
+                </button>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Total Soal -->
-                <div class="bg-black p-4 border-2 border-gray-700">
-                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">SET MAX TARGETS</label>
+                <!-- Atur Soal -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Soal</label>
+                        <p class="text-xs text-slate-500 mb-3">Tentukan batas maksimal nomor pertanyaan.</p>
+                    </div>
                     <div class="flex gap-2">
-                        <input type="number" id="total-soal-input" class="w-full p-2 p5-input text-center">
-                        <button id="btn-update-soal" class="p-2 bg-gray-200 text-black font-anton font-bold hover:bg-white transition border-2 border-black">SET</button>
+                        <input type="number" id="total-soal-input" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500 text-center">
+                        <button id="btn-update-soal" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition border border-slate-700">Set</button>
                     </div>
                 </div>
 
-                <!-- Form Control -->
-                <div class="bg-black p-4 border-2 border-gray-700">
-                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">SYSTEM LOCK</label>
-                    <div class="flex flex-col gap-2">
-                        <button id="btn-open" class="p-2 bg-white text-black border-2 border-red-600 font-anton hover:bg-red-600 hover:text-white transition">BREACH (BUKA 5s)</button>
-                        <button id="btn-close" class="p-2 bg-red-600 text-white font-anton hover:bg-red-800 transition">LOCKDOWN (TUTUP)</button>
+                <!-- Kontrol Pengisian -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Akses Formulir</label>
+                        <p class="text-xs text-slate-500 mb-3">Buka form dengan jeda 5 detik atau tutup langsung.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="btn-open" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 py-2 rounded-lg text-xs font-semibold transition">Buka (5s)</button>
+                        <button id="btn-close" class="flex-1 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 py-2 rounded-lg text-xs font-semibold transition">Tutup Form</button>
                     </div>
                 </div>
 
-                <!-- Reset Data -->
-                <div class="bg-black p-4 border-2 border-gray-700 flex flex-col justify-center">
-                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">WIPE PALACE DATA</label>
-                    <button id="btn-reset" class="p-3 bg-red-900 border-2 border-red-500 text-white font-anton hover:bg-red-600 transition shadow-[3px_3px_0_#000]">ERASE ALL LOGS</button>
+                <!-- Database Wipe -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Reset Responden</label>
+                        <p class="text-xs text-slate-500 mb-3">Menghapus seluruh data siswa yang sudah masuk.</p>
+                    </div>
+                    <button id="btn-reset" class="w-full bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/20 py-2 rounded-lg text-xs font-semibold transition">Hapus Semua Data</button>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- FIREBASE SDK & LOGIC -->
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-600">
+        &copy; 2026 Matematika SMAN 8 Jakarta. Secured Real-time System.
+    </footer>
+
+    <!-- FIREBASE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-        // Import Module Authentication
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-        // ==========================================
-        // KONFIGURASI ADMIN EMAIL (GANTI DENGAN EMAIL ASLI KAMU!)
-        // ==========================================
-        const ADMIN_EMAIL = "emailkamu@gmail.com"; 
+        const ADMIN_EMAIL = "ikhlasradhitya2809@gmail.com"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyCJaHDENyiCeStP7gJMxN4Ck7bFB7eHbdY",
@@ -197,8 +180,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // Setup Auth
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
@@ -227,59 +208,47 @@
         const btnClose = document.getElementById("btn-close");
         const btnReset = document.getElementById("btn-reset");
 
-        // ==========================================
-        // SISTEM AUTENTIKASI ADMIN
-        // ==========================================
-        
-        // Memantau status login (berjalan otomatis setiap kali web dibuka)
+        // Auth state listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (user.email === ADMIN_EMAIL) {
-                    // Jika admin berhasil login
                     adminPanel.classList.remove("hidden");
                     btnLoginAdmin.classList.add("hidden");
                 } else {
-                    // Jika orang lain yang mencoba login
-                    alert("ACCESS DENIED: Email ini bukan otoritas Admin.");
-                    signOut(auth); // Langsung logout otomatis
+                    alert("Akses ditolak: Email akun ini bukan otoritas Admin.");
+                    signOut(auth);
                     adminPanel.classList.add("hidden");
                     btnLoginAdmin.classList.remove("hidden");
                 }
             } else {
-                // Jika belum login
                 adminPanel.classList.add("hidden");
                 btnLoginAdmin.classList.remove("hidden");
             }
         });
 
-        // Tombol Login dipencet
         btnLoginAdmin.addEventListener("click", () => {
             signInWithPopup(auth, provider).catch((error) => {
                 console.error("Gagal Login:", error);
-                alert("Login dibatalkan atau terjadi kesalahan jaringan.");
             });
         });
 
-        // Tombol Logout dipencet
         btnLogout.addEventListener("click", () => {
-            signOut(auth).then(() => {
-                alert("Berhasil keluar dari mode Admin.");
-            });
+            signOut(auth);
         });
-
-        // ==========================================
-        // LOGIK FORM & DATABASE (Sama seperti sebelumnya)
-        // ==========================================
 
         function disableFormInputs() {
-            inputNama.disabled = true; inputAbsen.disabled = true;
-            selectSoal.disabled = true; btnSubmit.disabled = true;
+            inputNama.disabled = true; 
+            inputAbsen.disabled = true;
+            selectSoal.disabled = true; 
+            btnSubmit.disabled = true;
         }
 
         function enableFormInputs() {
-            inputNama.disabled = false; inputAbsen.disabled = false;
-            selectSoal.disabled = false; btnSubmit.disabled = false;
-            btnSubmit.innerText = "AMBIL SOAL";
+            inputNama.disabled = false; 
+            inputAbsen.disabled = false;
+            selectSoal.disabled = false; 
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Kirim Jawaban";
         }
 
         onSnapshot(configDoc, (snapshot) => {
@@ -293,25 +262,27 @@
                 clearInterval(countdownInterval);
 
                 if (isLocked) {
-                    statusMessage.classList.remove("hidden", "bg-yellow-400", "text-black");
-                    statusMessage.classList.add("bg-red-600", "text-white");
-                    statusMessage.innerText = "SYSTEM LOCKDOWN ACTIVE";
+                    statusMessage.className = "mb-8 p-4 rounded-xl text-center font-medium text-sm border bg-red-500/10 border-red-500/20 text-red-400";
+                    statusMessage.innerText = "Formulir pengisian sedang ditutup oleh Admin.";
+                    statusMessage.classList.remove("hidden");
+                    
                     disableFormInputs();
-                    btnSubmit.innerText = "ACCESS DENIED";
+                    btnSubmit.innerText = "Form Ditutup";
                     form.reset();
                     updateDropdown();
                 } else {
                     const now = Date.now();
                     if (now < unlockTime) {
                         disableFormInputs();
-                        btnSubmit.innerText = "PREPARING BREACH...";
-                        statusMessage.classList.remove("hidden", "bg-red-600", "text-white");
-                        statusMessage.classList.add("bg-yellow-400", "text-black");
+                        btnSubmit.innerText = "Bersiap...";
+                        
+                        statusMessage.className = "mb-8 p-4 rounded-xl text-center font-medium text-sm border bg-amber-500/10 border-amber-500/20 text-amber-400";
+                        statusMessage.classList.remove("hidden");
                         
                         countdownInterval = setInterval(() => {
                             const timeLeft = Math.ceil((unlockTime - Date.now()) / 1000);
                             if (timeLeft > 0) {
-                                statusMessage.innerText = `INFILTRATION IN: 00:0${timeLeft}`;
+                                statusMessage.innerText = `Formulir akan dibuka dalam ${timeLeft} detik...`;
                             } else {
                                 clearInterval(countdownInterval);
                                 enableFormInputs();
@@ -340,14 +311,15 @@
             });
             dataDocs.sort((a, b) => a.id - b.id);
             if (dataDocs.length === 0) {
-                dashboard.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-600 font-anton text-xl tracking-widest">NO TARGETS SECURED YET.</td></tr>`;
+                dashboard.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-slate-500">Belum ada responden yang memilih soal.</td></tr>`;
             } else {
                 dataDocs.forEach((data) => {
                     const tr = document.createElement("tr");
+                    tr.className = "hover:bg-slate-900/50 transition";
                     tr.innerHTML = `
-                        <td class="p-4 text-center td-highlight text-xl">${data.id}</td>
-                        <td class="p-4 font-bold tracking-wider">${data.nama.toUpperCase()}</td>
-                        <td class="p-4 text-center text-gray-400 font-bold">${data.absen}</td>
+                        <td class="py-3 px-4 text-center font-semibold text-blue-400">#${data.id}</td>
+                        <td class="py-3 px-4 text-slate-200 font-medium">${data.nama}</td>
+                        <td class="py-3 px-4 text-center text-slate-400">${data.absen}</td>
                     `;
                     dashboard.appendChild(tr);
                 });
@@ -357,19 +329,19 @@
 
         function updateDropdown() {
             const currentValue = selectSoal.value;
-            selectSoal.innerHTML = '<option value="" disabled selected>-- SELECT TARGET --</option>';
+            selectSoal.innerHTML = '<option value="" disabled selected>-- Pilih Nomor Soal --</option>';
             let availableCount = 0;
             for (let i = 1; i <= totalSoal; i++) {
                 if (!claimedTickets.includes(i)) {
                     const option = document.createElement("option");
                     option.value = i;
-                    option.textContent = `TARGET NO. ${i}`;
+                    option.textContent = `Soal No. ${i}`;
                     selectSoal.appendChild(option);
                     availableCount++;
                 }
             }
             if (availableCount === 0 && !isLocked) {
-                selectSoal.innerHTML = '<option value="" disabled selected>ALL TARGETS SECURED!</option>';
+                selectSoal.innerHTML = '<option value="" disabled selected>Semua soal telah habis dipilih!</option>';
             }
             if (currentValue && !claimedTickets.includes(parseInt(currentValue))) {
                 selectSoal.value = currentValue;
@@ -382,28 +354,28 @@
             const nama = inputNama.value.trim();
             const absen = inputAbsen.value;
             const soalDipilih = selectSoal.value;
-            if (!soalDipilih) return alert("PILIH TARGET YANG VALID!");
+            if (!soalDipilih) return alert("Silakan pilih nomor soal.");
 
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "HACKING...";
+            btnSubmit.innerText = "Mengirim...";
             try {
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
                     nama: nama, absen: absen, timestamp: new Date()
                 });
                 form.reset();
             } catch (error) {
-                alert("KONEKSI METAVERSE TERPUTUS. COBA LAGI.");
+                alert("Gagal mengirim data. Periksa koneksi.");
             } finally {
                 if(!isLocked) {
                     btnSubmit.disabled = false;
-                    btnSubmit.innerText = "AMBIL SOAL";
+                    btnSubmit.innerText = "Kirim Jawaban";
                 }
             }
         });
 
         btnUpdateSoal.addEventListener("click", async () => {
             const newVal = parseInt(inputTotalSoal.value);
-            if (newVal > 0) { await updateDoc(configDoc, { totalSoal: newVal }); }
+            if (newVal > 0) { await updateDoc(configDoc, { totalSoal: newVal }); alert("Total soal diperbarui."); }
         });
         btnOpen.addEventListener("click", async () => {
             const targetTime = Date.now() + 5000;
@@ -413,9 +385,9 @@
             await updateDoc(configDoc, { isLocked: true });
         });
         btnReset.addEventListener("click", async () => {
-            const confirmReset = confirm("WARNING: THIS WILL WIPE ALL STOLEN TARGETS. CONTINUE?");
+            const confirmReset = confirm("Yakin ingin menghapus seluruh data responden?");
             if (!confirmReset) return;
-            btnReset.innerText = "ERASING..."; btnReset.disabled = true;
+            btnReset.innerText = "Menghapus..."; btnReset.disabled = true;
             try {
                 const querySnapshot = await getDocs(ticketsCol);
                 const deletePromises = [];
@@ -423,8 +395,9 @@
                     deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                 });
                 await Promise.all(deletePromises);
+                alert("Data berhasil dibersihkan.");
             } finally {
-                btnReset.innerText = "ERASE ALL LOGS"; btnReset.disabled = false;
+                btnReset.innerText = "Hapus Semua Data"; btnReset.disabled = false;
             }
         });
     </script>
