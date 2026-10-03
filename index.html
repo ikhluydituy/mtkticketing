@@ -15,9 +15,19 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-animate {
+            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
+
+    <!-- Container Notifikasi Elegan -->
+    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-3 w-full max-w-md px-4 pointer-events-none"></div>
 
     <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
@@ -40,7 +50,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Kolom Kiri: Form Pengisian (Span 5) -->
+            <!-- Kolom Kiri: Form Pengisian -->
             <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold tracking-tight text-white">Ambil Soal</h2>
@@ -68,7 +78,7 @@
                 </form>
             </div>
 
-            <!-- Kolom Kanan: Live Dashboard Table (Span 7) -->
+            <!-- Kolom Kanan: Live Dashboard Table -->
             <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
                 <div class="mb-6 flex justify-between items-center">
                     <div>
@@ -108,7 +118,7 @@
             </button>
         </div>
 
-        <!-- Panel Admin (Tersembunyi by default) -->
+        <!-- Panel Admin -->
         <div id="admin-panel" class="hidden mt-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
                 <div>
@@ -121,7 +131,6 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Atur Soal -->
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
                         <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Soal</label>
@@ -133,7 +142,6 @@
                     </div>
                 </div>
 
-                <!-- Kontrol Pengisian -->
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
                         <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Akses Formulir</label>
@@ -145,7 +153,6 @@
                     </div>
                 </div>
 
-                <!-- Database Wipe -->
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
                     <div>
                         <label class="block mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Reset Responden</label>
@@ -165,7 +172,7 @@
     <!-- FIREBASE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, runTransaction, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const ADMIN_EMAIL = "ikhlasradhitya2809@gmail.com"; 
@@ -186,6 +193,13 @@
 
         const ticketsCol = collection(db, "tickets");
         const configDoc = doc(db, "settings", "main");
+
+        // Generate ID unik untuk perangkat ini (jika belum ada)
+        let deviceToken = localStorage.getItem("device_token");
+        if (!deviceToken) {
+            deviceToken = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+            localStorage.setItem("device_token", deviceToken);
+        }
 
         let totalSoal = 0;
         let isLocked = true;
@@ -209,14 +223,47 @@
         const btnClose = document.getElementById("btn-close");
         const btnReset = document.getElementById("btn-reset");
 
-        // Auth state listener
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            
+            let bgClass = "bg-slate-900 border-slate-700 text-slate-200";
+            let dotClass = "bg-blue-500";
+            
+            if (type === "success") {
+                bgClass = "bg-slate-900/95 border-emerald-500/30 text-slate-100 shadow-emerald-500/10";
+                dotClass = "bg-emerald-500";
+            } else if (type === "error") {
+                bgClass = "bg-slate-900/95 border-red-500/30 text-slate-100 shadow-red-500/10";
+                dotClass = "bg-red-500";
+            } else if (type === "warning") {
+                bgClass = "bg-slate-900/95 border-amber-500/30 text-slate-100 shadow-amber-500/10";
+                dotClass = "bg-amber-500";
+            }
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md toast-animate ${bgClass}`;
+            toast.innerHTML = `
+                <div class="h-2.5 w-2.5 rounded-full ${dotClass} flex-shrink-0 animate-pulse"></div>
+                <div class="text-sm font-medium tracking-wide flex-grow">${message}</div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = "all 0.3s ease";
+                toast.style.opacity = "0";
+                toast.style.transform = "translateY(-10px)";
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (user.email === ADMIN_EMAIL) {
                     adminPanel.classList.remove("hidden");
                     btnLoginAdmin.classList.add("hidden");
+                    showToast("Berhasil masuk sebagai Admin.", "success");
                 } else {
-                    alert("Akses ditolak: Email akun ini bukan otoritas Admin.");
+                    showToast("Akses ditolak: Akun bukan otoritas Admin.", "error");
                     signOut(auth);
                     adminPanel.classList.add("hidden");
                     btnLoginAdmin.classList.remove("hidden");
@@ -229,12 +276,13 @@
 
         btnLoginAdmin.addEventListener("click", () => {
             signInWithPopup(auth, provider).catch((error) => {
-                console.error("Gagal Login:", error);
+                showToast("Login dibatalkan.", "error");
             });
         });
 
         btnLogout.addEventListener("click", () => {
             signOut(auth);
+            showToast("Keluar dari sesi Admin.", "success");
         });
 
         function disableFormInputs() {
@@ -276,7 +324,6 @@
                     if (now < unlockTime) {
                         disableFormInputs();
                         btnSubmit.innerText = "Bersiap...";
-                        
                         statusMessage.className = "mb-8 p-4 rounded-xl text-center font-medium text-sm border bg-amber-500/10 border-amber-500/20 text-amber-400";
                         statusMessage.classList.remove("hidden");
                         
@@ -306,12 +353,10 @@
             claimedTickets = [];
             dashboard.innerHTML = "";
             const dataDocs = [];
-            
-            // Ambil data soal yang diklaim oleh device ini dari LocalStorage
-            let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
 
             snapshot.forEach((doc) => {
-                dataDocs.push({ id: parseInt(doc.id), ...doc.data() });
+                const docData = doc.data();
+                dataDocs.push({ id: parseInt(doc.id), ...docData });
                 claimedTickets.push(parseInt(doc.id));
             });
             dataDocs.sort((a, b) => a.id - b.id);
@@ -323,8 +368,8 @@
                     const tr = document.createElement("tr");
                     tr.className = "hover:bg-slate-900/50 transition";
                     
-                    // Cek apakah soal ini diklaim oleh browser ini
-                    const isMyClaim = myClaimedSoal.includes(data.id);
+                    // Validasi kepemilikan murni berdasarkan Device Token dari server
+                    const isMyClaim = (data.deviceToken === deviceToken);
                     let actionHtml = `<span class="text-slate-600 text-xs italic">Terkunci</span>`;
 
                     if (isMyClaim) {
@@ -343,28 +388,24 @@
             updateDropdown();
         });
 
-        // Fungsi Global untuk Membatalkan Pilihan Soal
+        // Fungsi Global Batalkan (Menggunakan pengecekan kepemilikan server-side)
         window.cancelClaim = async function(soalId) {
             if (isLocked) {
-                alert("Form sedang ditutup, pembatalan dibatasi.");
+                showToast("Form sedang ditutup, pembatalan dibatasi.", "warning");
                 return;
             }
 
-            const confirmCancel = confirm(`Yakin ingin membatalkan pilihan untuk Soal No. ${soalId}? Soal akan kembali tersedia.`);
-            if (!confirmCancel) return;
-
+            const docRef = doc(db, "tickets", soalId.toString());
             try {
-                // Hapus data dari Firebase Firestore
-                await deleteDoc(doc(db, "tickets", soalId.toString()));
-
-                // Hapus dari LocalStorage perangkat ini
-                let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
-                myClaimedSoal = myClaimedSoal.filter(id => id !== soalId);
-                localStorage.setItem("my_claims", JSON.stringify(myClaimedSoal));
-
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().deviceToken === deviceToken) {
+                    await deleteDoc(docRef);
+                    showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan.`, "success");
+                } else {
+                    showToast("Aksi ditolak: Soal ini bukan milik perangkat Anda.", "error");
+                }
             } catch (error) {
-                console.error("Gagal membatalkan:", error);
-                alert("Terjadi kesalahan saat membatalkan pilihan.");
+                showToast("Gagal membatalkan pilihan.", "error");
             }
         }
 
@@ -389,31 +430,49 @@
             }
         }
 
+        // 3. SUBMIT DENGAN ATOMIC TRANSACTION (Sistem Rebutan Adil / First-Come First-Served)
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (inputNama.disabled || selectSoal.disabled) return;
+            
             const nama = inputNama.value.trim();
             const absen = inputAbsen.value;
             const soalDipilih = parseInt(selectSoal.value);
-            if (!soalDipilih) return alert("Silakan pilih nomor soal.");
+            
+            if (!soalDipilih) {
+                showToast("Silakan pilih nomor soal terlebih dahulu.", "warning");
+                return;
+            }
 
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Mengirim...";
+            btnSubmit.innerText = "Mengamankan Soal...";
+
+            const ticketRef = doc(db, "tickets", soalDipilih.toString());
+
             try {
-                await setDoc(doc(ticketsCol, soalDipilih.toString()), {
-                    nama: nama, absen: absen, timestamp: new Date()
+                // Menggunakan Firestore Transaction agar dijamin tidak ada bentrok rebutan
+                await runTransaction(db, async (transaction) => {
+                    const ticketDoc = await transaction.get(ticketRef);
+                    if (ticketDoc.exists()) {
+                        throw new Error("ALREADY_CLAIMED");
+                    }
+                    transaction.set(ticketRef, {
+                        nama: nama,
+                        absen: absen,
+                        deviceToken: deviceToken, // Disimpan langsung di database untuk validasi anti-nyolong
+                        timestamp: new Date()
+                    });
                 });
 
-                // Simpan ID soal ke LocalStorage perangkat ini agar tombol "Batalkan" muncul
-                let myClaimedSoal = JSON.parse(localStorage.getItem("my_claims") || "[]");
-                if (!myClaimedSoal.includes(soalDipilih)) {
-                    myClaimedSoal.push(soalDipilih);
-                    localStorage.setItem("my_claims", JSON.stringify(myClaimedSoal));
-                }
-
                 form.reset();
+                showToast(`Berhasil mengamankan Soal No. ${soalDipilih}!`, "success");
             } catch (error) {
-                alert("Gagal mengirim data. Periksa koneksi.");
+                if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
+                    showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain detik ini.`, "error");
+                } else {
+                    showToast("Gagal mengirim data. Periksa koneksi internet.", "error");
+                }
+                updateDropdown(); // Refresh dropdown agar pilihan yang sudah habis langsung hilang
             } finally {
                 if(!isLocked) {
                     btnSubmit.disabled = false;
@@ -424,19 +483,31 @@
 
         btnUpdateSoal.addEventListener("click", async () => {
             const newVal = parseInt(inputTotalSoal.value);
-            if (newVal > 0) { await updateDoc(configDoc, { totalSoal: newVal }); alert("Total soal diperbarui."); }
+            if (newVal > 0) { 
+                await updateDoc(configDoc, { totalSoal: newVal }); 
+                showToast("Total soal berhasil diperbarui.", "success");
+            } else {
+                showToast("Masukkan angka total soal yang valid.", "warning");
+            }
         });
+        
         btnOpen.addEventListener("click", async () => {
             const targetTime = Date.now() + 5000;
             await updateDoc(configDoc, { isLocked: false, unlockTime: targetTime });
+            showToast("Perintah buka form dikirim (Hitung mundur 5s).", "success");
         });
+        
         btnClose.addEventListener("click", async () => {
             await updateDoc(configDoc, { isLocked: true });
+            showToast("Formulir berhasil dikunci langsung.", "success");
         });
+        
         btnReset.addEventListener("click", async () => {
             const confirmReset = confirm("Yakin ingin menghapus seluruh data responden?");
             if (!confirmReset) return;
-            btnReset.innerText = "Menghapus..."; btnReset.disabled = true;
+            
+            btnReset.innerText = "Menghapus..."; 
+            btnReset.disabled = true;
             try {
                 const querySnapshot = await getDocs(ticketsCol);
                 const deletePromises = [];
@@ -444,13 +515,12 @@
                     deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                 });
                 await Promise.all(deletePromises);
-                
-                // Kosongkan riwayat lokal juga
-                localStorage.removeItem("my_claims");
-
-                alert("Data berhasil dibersihkan.");
+                showToast("Seluruh data responden berhasil dibersihkan.", "success");
+            } catch (error) {
+                showToast("Terjadi kesalahan saat menghapus data.", "error");
             } finally {
-                btnReset.innerText = "Hapus Semua Data"; btnReset.disabled = false;
+                btnReset.innerText = "Hapus Semua Data"; 
+                btnReset.disabled = false;
             }
         });
     </script>
