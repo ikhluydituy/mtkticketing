@@ -394,31 +394,33 @@
                 dataDocs.push({ id: soalNo, ...docData });
                 claimedTickets.push(soalNo);
 
-                exportLines.push(`${soalNo}. ${docData.nama} (${docData.absen})`);
+                // Format salin: [nomor pilihan.nama (nomor absen)] -> Contoh: [1. Abdul Danish (1)]
+                exportLines.push(`[${soalNo}. ${docData.nama} (${docData.absen})]`);
 
-                // Cek apakah device ini sudah punya klaim aktif di server
                 if (docData.deviceToken === deviceToken) {
                     myActiveClaim = true;
                 }
             });
 
-            // LOGIKA 1 DEVICE = 1 KLAIM AKTIF
             if (myActiveClaim && !isAdminLoggedIn) {
                 selectSiswa.disabled = true;
                 selectSoal.disabled = true;
                 btnSubmit.disabled = true;
                 btnSubmit.innerText = "Soal Telah Diamankan di HP Ini";
             } else if (!isLocked || isAdminLoggedIn) {
-                // Jika belum ambil dan form dibuka, nyalakan kembali inputnya
                 if (!selectSiswa.disabled && !isAdminLoggedIn && !isLocked) {
-                    // Biarkan tetap aktif
+                    // Biarkan aktif
                 } else if(!isLocked && !isAdminLoggedIn) {
                     enableFormInputs();
                 }
             }
             
             dataDocs.sort((a, b) => a.id - b.id);
-            exportLines.sort((a, b) => parseInt(a) - parseInt(b));
+            exportLines.sort((a, b) => {
+                const numA = parseInt(a.match(/\d+/)[0]);
+                const numB = parseInt(b.match(/\d+/)[0]);
+                return numA - numB;
+            });
             exportTextarea.value = exportLines.join('\n');
             
             if (dataDocs.length === 0) {
@@ -520,11 +522,9 @@
                     });
                 });
 
-                // Berhasil mengamankan soal, form dikunci untuk device ini sampai dibatalkan
                 showToast(`Berhasil mengamankan Soal No. ${soalDipilih} untuk ${namaSiswa}!`, "success");
             } catch (error) {
                 if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
-                    // Gagal karena direbut orang: Dropdown nomor soal di-reset, tapi NAMA SISWA TETAP ADA
                     selectSoal.value = ""; 
                     showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain. Silakan pilih nomor lain.`, "error");
                 } else {
@@ -532,7 +532,6 @@
                 }
                 updateDropdown();
             } finally {
-                // Kembalikan tombol jika gagal, atau biarkan terkunci jika sukses
                 const snapshotCheck = await getDocs(ticketsCol);
                 let stillClaimed = false;
                 snapshotCheck.forEach(d => {
