@@ -244,6 +244,7 @@
         let totalSoal = 0;
         let isLocked = true;
         let claimedTickets = [];
+        let claimedAbsens = []; // Menyimpan daftar absen siswa yang sudah terdaftar
         let isAdminLoggedIn = false;
         let countdownInterval;
 
@@ -383,6 +384,7 @@
 
         onSnapshot(ticketsCol, (snapshot) => {
             claimedTickets = [];
+            claimedAbsens = [];
             dashboard.innerHTML = "";
             const dataDocs = [];
             let exportLines = [];
@@ -393,8 +395,8 @@
                 const soalNo = parseInt(doc.id);
                 dataDocs.push({ id: soalNo, ...docData });
                 claimedTickets.push(soalNo);
+                claimedAbsens.push(parseInt(docData.absen));
 
-                // Format salin: nomor pilihan.nama (nomor absen) -> Tanpa tanda kurung siku []
                 exportLines.push(`${soalNo}.${docData.nama} (${docData.absen})`);
 
                 if (docData.deviceToken === deviceToken) {
@@ -406,7 +408,7 @@
                 selectSiswa.disabled = true;
                 selectSoal.disabled = true;
                 btnSubmit.disabled = true;
-                btnSubmit.innerText = "Soal Telah Diamankan di HP Ini";
+                btnSubmit.innerText = "Soal Telah Diamankan di Device Ini";
             } else if (!isLocked || isAdminLoggedIn) {
                 if (!selectSiswa.disabled && !isAdminLoggedIn && !isLocked) {
                     // Biarkan aktif
@@ -455,7 +457,7 @@
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists() && (docSnap.data().deviceToken === deviceToken || isAdminLoggedIn)) {
                     await deleteDoc(docRef);
-                    showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan. HP ini sekarang bisa memilih soal lain.`, "success");
+                    showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan. Device ini sekarang bisa memilih soal lain.`, "success");
                     if (!isAdminLoggedIn) {
                         enableFormInputs();
                     }
@@ -497,6 +499,12 @@
             
             if (!absenVal || !soalDipilih) {
                 showToast("Pilih nama siswa dan nomor soal terlebih dahulu.", "warning");
+                return;
+            }
+
+            // Validasi ketat: pastikan nama/absen tersebut belum mengambil soal lain di database
+            if (claimedAbsens.includes(absenVal) && !isAdminLoggedIn) {
+                showToast("Nama siswa ini sudah tercatat mengambil soal!", "warning");
                 return;
             }
 
