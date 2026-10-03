@@ -11,7 +11,7 @@
         <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Sistem Pembagian Soal Matematika</h1>
 
         <!-- Status & Notifikasi -->
-        <div id="status-message" class="mb-6 p-3 bg-red-100 text-red-700 border border-red-400 rounded text-center font-semibold hidden">
+        <div id="status-message" class="mb-6 p-3 bg-red-100 text-red-700 border border-red-400 rounded text-center font-bold text-lg hidden transition-colors duration-300">
             Pengisian sedang ditutup oleh Admin.
         </div>
 
@@ -22,15 +22,15 @@
                 <form id="ticket-form">
                     <div class="mb-4">
                         <label class="block mb-1 font-medium text-gray-700">Nama Penjawab</label>
-                        <input type="text" id="nama" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required placeholder="Masukkan nama kamu...">
+                        <input type="text" id="nama" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required placeholder="Masukkan nama kamu...">
                     </div>
                     <div class="mb-4">
                         <label class="block mb-1 font-medium text-gray-700">Nomor Absen</label>
-                        <input type="number" id="absen" min="1" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required placeholder="Contoh: 15">
+                        <input type="number" id="absen" min="1" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required placeholder="Contoh: 15">
                     </div>
                     <div class="mb-5">
                         <label class="block mb-1 font-medium text-gray-700">Pilih Nomor Soal</label>
-                        <select id="nomor-soal" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required>
+                        <select id="nomor-soal" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required>
                             <option value="" disabled selected>-- Memuat Soal... --</option>
                         </select>
                         <p class="text-xs text-gray-500 mt-1">*Soal yang sudah dipilih orang lain tidak akan muncul.</p>
@@ -69,53 +69,59 @@
         <!-- Panel Admin (Tersembunyi by default) -->
         <div id="admin-panel" class="hidden mt-4 p-5 border border-gray-300 rounded-lg bg-gray-100 shadow-inner">
             <h2 class="text-xl font-bold mb-4 text-gray-800">Panel Kontrol Admin</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
                 <div class="bg-white p-4 rounded border">
-                    <label class="block mb-2 font-medium text-gray-700">Atur Total Pertanyaan:</label>
+                    <label class="block mb-2 font-medium text-gray-700 text-sm">Total Pertanyaan:</label>
                     <div class="flex gap-2">
-                        <input type="number" id="total-soal-input" class="border p-2 rounded w-24 focus:ring focus:ring-gray-200">
-                        <button id="btn-update-soal" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">Update</button>
+                        <input type="number" id="total-soal-input" class="border p-2 rounded w-full focus:ring focus:ring-gray-200 text-sm">
+                        <button id="btn-update-soal" class="bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-800 text-sm">Set</button>
                     </div>
                 </div>
-                <div class="bg-white p-4 rounded border flex flex-col justify-center">
-                    <label class="block mb-2 font-medium text-gray-700">Status Form:</label>
-                    <button id="btn-toggle-lock" class="bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 transition">Tutup & Reset Data</button>
+
+                <div class="bg-white p-4 rounded border">
+                    <label class="block mb-2 font-medium text-gray-700 text-sm">Kontrol Akses Form:</label>
+                    <div class="flex gap-2">
+                        <button id="btn-open" class="flex-1 bg-green-600 text-white px-2 py-2 rounded font-semibold hover:bg-green-700 transition text-sm">Buka (5s)</button>
+                        <button id="btn-close" class="flex-1 bg-red-600 text-white px-2 py-2 rounded font-semibold hover:bg-red-700 transition text-sm">Tutup</button>
+                    </div>
                 </div>
+
+                <div class="bg-white p-4 rounded border flex flex-col justify-center">
+                    <label class="block mb-2 font-medium text-gray-700 text-sm">Database:</label>
+                    <button id="btn-reset" class="bg-gray-900 text-white px-4 py-2 rounded font-semibold hover:bg-black transition text-sm">Hapus Semua Responden</button>
+                </div>
+
             </div>
         </div>
     </div>
 
     <!-- FIREBASE SDK & LOGIC -->
     <script type="module">
-        // Import Firebase v12.19.0
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
         import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-        // Firebase Config dari project kamu
+        // Firebase Config Kamu
         const firebaseConfig = {
             apiKey: "AIzaSyCJaHDENyiCeStP7gJMxN4Ck7bFB7eHbdY",
             authDomain: "mtkticketing.firebaseapp.com",
             projectId: "mtkticketing",
             storageBucket: "mtkticketing.firebasestorage.app",
             messagingSenderId: "31572951375",
-            appId: "1:31572951375:web:fb1b28ca6f60cfae89053a",
-            measurementId: "G-FSWCH59XLD"
+            appId: "1:31572951375:web:fb1b28ca6f60cfae89053a"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Referensi Koleksi & Dokumen
         const ticketsCol = collection(db, "tickets");
         const configDoc = doc(db, "settings", "main");
 
         // State Global
         let totalSoal = 0;
-        let isLocked = false;
+        let isLocked = true; // Default locked until config loaded
         let claimedTickets = [];
+        let countdownInterval;
 
         // DOM Elements
         const form = document.getElementById("ticket-form");
@@ -131,50 +137,86 @@
         const btnShowAdmin = document.getElementById("btn-show-admin");
         const inputTotalSoal = document.getElementById("total-soal-input");
         const btnUpdateSoal = document.getElementById("btn-update-soal");
-        const btnToggleLock = document.getElementById("btn-toggle-lock");
+        
+        // Admin Buttons
+        const btnOpen = document.getElementById("btn-open");
+        const btnClose = document.getElementById("btn-close");
+        const btnReset = document.getElementById("btn-reset");
 
-        // 1. Sinkronisasi Konfigurasi Admin (Real-time)
+        // Fungsi Kunci Input
+        function disableFormInputs() {
+            inputNama.disabled = true;
+            inputAbsen.disabled = true;
+            selectSoal.disabled = true;
+            btnSubmit.disabled = true;
+        }
+
+        // Fungsi Buka Input
+        function enableFormInputs() {
+            inputNama.disabled = false;
+            inputAbsen.disabled = false;
+            selectSoal.disabled = false;
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Ambil Soal";
+        }
+
+        // 1. Sinkronisasi Konfigurasi Admin (Real-time & Countdown logic)
         onSnapshot(configDoc, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
                 totalSoal = data.totalSoal || 20; 
-                isLocked = data.isLocked || false;
+                isLocked = data.isLocked;
+                const unlockTime = data.unlockTime || 0;
                 
                 inputTotalSoal.value = totalSoal;
+                
+                // Hentikan interval countdown sebelumnya jika ada perubahan mendadak
+                clearInterval(countdownInterval);
 
-                // Handle Lock/Unlock UI & Matikan Input
                 if (isLocked) {
-                    statusMessage.classList.remove("hidden");
+                    // JIKA FORM DITUTUP
+                    statusMessage.classList.remove("hidden", "bg-yellow-100", "text-yellow-700", "border-yellow-400");
+                    statusMessage.classList.add("bg-red-100", "text-red-700", "border-red-400");
+                    statusMessage.innerText = "Pengisian ditutup oleh Admin.";
                     
-                    // Matikan input agar tidak bisa head start
-                    inputNama.disabled = true;
-                    inputAbsen.disabled = true;
-                    selectSoal.disabled = true;
-                    btnSubmit.disabled = true;
-                    
+                    disableFormInputs();
                     btnSubmit.innerText = "Form Ditutup";
                     
-                    btnToggleLock.innerText = "Buka Form Pengisian";
-                    btnToggleLock.classList.replace("bg-red-600", "bg-green-600");
-                    btnToggleLock.classList.replace("hover:bg-red-700", "hover:bg-green-700");
+                    // Reset isi form jika ada yang lagi ngetik
+                    form.reset();
+                    updateDropdown();
                 } else {
-                    statusMessage.classList.add("hidden");
-                    
-                    // Nyalakan input kembali
-                    inputNama.disabled = false;
-                    inputAbsen.disabled = false;
-                    selectSoal.disabled = false;
-                    btnSubmit.disabled = false;
-                    
-                    btnSubmit.innerText = "Ambil Soal";
-                    
-                    btnToggleLock.innerText = "Tutup & Reset Data";
-                    btnToggleLock.classList.replace("bg-green-600", "bg-red-600");
-                    btnToggleLock.classList.replace("hover:bg-green-700", "hover:bg-red-700");
+                    // JIKA FORM BERSTATUS DIBUKA (Cek waktu unlock)
+                    const now = Date.now();
+                    if (now < unlockTime) {
+                        // Jika saat ini belum melewati waktu unlock -> Hitung Mundur
+                        disableFormInputs();
+                        btnSubmit.innerText = "Bersiaplah...";
+                        
+                        statusMessage.classList.remove("hidden", "bg-red-100", "text-red-700", "border-red-400");
+                        statusMessage.classList.add("bg-yellow-100", "text-yellow-700", "border-yellow-400");
+                        
+                        // Menjalankan Timer secara visual tiap detik
+                        countdownInterval = setInterval(() => {
+                            const timeLeft = Math.ceil((unlockTime - Date.now()) / 1000);
+                            if (timeLeft > 0) {
+                                statusMessage.innerText = `Form akan dibuka dalam ${timeLeft}...`;
+                            } else {
+                                clearInterval(countdownInterval);
+                                enableFormInputs();
+                                statusMessage.classList.add("hidden");
+                                updateDropdown();
+                            }
+                        }, 250); // Loop cepat agar mulus
+                    } else {
+                        // Waktu sudah normal terbuka
+                        enableFormInputs();
+                        statusMessage.classList.add("hidden");
+                        updateDropdown();
+                    }
                 }
-                updateDropdown();
             } else {
-                setDoc(configDoc, { totalSoal: 20, isLocked: false });
+                setDoc(configDoc, { totalSoal: 20, isLocked: true });
             }
         });
 
@@ -233,16 +275,20 @@
             }
         }
 
-        // 3. Handle Submit Form
+        // 3. Handle Submit Form User
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            if (isLocked) return alert("Maaf, pengisian saat ini sedang ditutup.");
+            if (inputNama.disabled || selectSoal.disabled) return;
 
             const nama = inputNama.value.trim();
             const absen = inputAbsen.value;
             const soalDipilih = selectSoal.value;
 
             if (!soalDipilih) return alert("Silakan pilih nomor soal yang tersedia.");
+
+            // Matikan tombol sementara agar tidak double klik
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Mengirim...";
 
             try {
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
@@ -254,6 +300,9 @@
             } catch (error) {
                 console.error("Error saving data:", error);
                 alert("Gagal mengambil soal, pastikan koneksi internet stabil.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Ambil Soal";
             }
         });
 
@@ -263,7 +312,6 @@
 
         btnShowAdmin.addEventListener("click", () => {
             const password = prompt("Masukkan Password Admin:");
-            // Password telah diubah menjadi ikhlas2809
             if (password === "ikhlas2809") {
                 adminPanel.classList.remove("hidden");
                 btnShowAdmin.classList.add("hidden");
@@ -282,27 +330,52 @@
             }
         });
 
-        btnToggleLock.addEventListener("click", async () => {
+        // BUKA FORM (Dengan Delay 5 Detik)
+        btnOpen.addEventListener("click", async () => {
             try {
-                if (isLocked) {
-                    await updateDoc(configDoc, { isLocked: false });
-                } else {
-                    const confirmReset = confirm("Peringatan: Aksi ini akan MENUTUP form sekaligus MENGHAPUS SEMUA DATA PENJAWAB. Lanjutkan?");
-                    if (!confirmReset) return;
+                // Set unlockTime ke 5000ms (5 detik) dari waktu sekarang
+                const targetTime = Date.now() + 5000;
+                await updateDoc(configDoc, { 
+                    isLocked: false,
+                    unlockTime: targetTime
+                });
+            } catch (e) {
+                alert("Gagal mengupdate status database.");
+            }
+        });
 
-                    const querySnapshot = await getDocs(ticketsCol);
-                    const deletePromises = [];
-                    querySnapshot.forEach((document) => {
-                        deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
-                    });
-                    
-                    await Promise.all(deletePromises);
-                    await updateDoc(configDoc, { isLocked: true });
-                    alert("Form berhasil ditutup dan seluruh data penjawab telah direset.");
-                }
+        // TUTUP FORM (Langsung Instan)
+        btnClose.addEventListener("click", async () => {
+            try {
+                await updateDoc(configDoc, { isLocked: true });
+            } catch (e) {
+                alert("Gagal menutup form.");
+            }
+        });
+
+        // HAPUS RESPONDEN (Tombol Terpisah)
+        btnReset.addEventListener("click", async () => {
+            const confirmReset = confirm("Peringatan: Aksi ini akan MENGHAPUS SEMUA DATA PENJAWAB. Lanjutkan?");
+            if (!confirmReset) return;
+
+            btnReset.innerText = "Menghapus Data...";
+            btnReset.disabled = true;
+
+            try {
+                const querySnapshot = await getDocs(ticketsCol);
+                const deletePromises = [];
+                querySnapshot.forEach((document) => {
+                    deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
+                });
+                
+                await Promise.all(deletePromises);
+                alert("Seluruh data penjawab telah direset.");
             } catch (error) {
-                console.error("Error Admin Action:", error);
-                alert("Terjadi kesalahan sistem saat memproses.");
+                console.error("Error Reset:", error);
+                alert("Terjadi kesalahan saat menghapus data.");
+            } finally {
+                btnReset.innerText = "Hapus Semua Responden";
+                btnReset.disabled = false;
             }
         });
     </script>
