@@ -3,57 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Tiket Soal Matematika</title>
+    <title>Sistem Tiket Soal — The Phantoms</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6 font-sans">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Sistem Pembagian Soal Matematika</h1>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&family=Anton&display=swap" rel="stylesheet">
+    <style>
+        /* TEMA PERSONA 5 */
+        body {
+            background-color: #0a0a0a;
+            /* Pola titik-titik (halftone) samar di background */
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 15px 15px;
+            font-family: 'Special Elite', monospace;
+            color: #fff;
+            overflow-x: hidden;
+        }
 
-        <!-- Status & Notifikasi -->
-        <div id="status-message" class="mb-6 p-3 bg-red-100 text-red-700 border border-red-400 rounded text-center font-bold text-lg hidden transition-colors duration-300">
-            Pengisian sedang ditutup oleh Admin.
+        h1, h2, .font-marker { font-family: 'Permanent Marker', cursive; }
+        .font-anton { font-family: 'Anton', sans-serif; letter-spacing: 1px; }
+
+        /* Dekorasi Kanan Atas */
+        .top-right-decor {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #000;
+            color: #fff;
+            font-family: 'Permanent Marker', cursive;
+            padding: 5px 15px;
+            font-size: 20px;
+            transform: rotate(4deg);
+            border: 3px solid #fff;
+            box-shadow: -4px 4px 0 #e0000b;
+            z-index: 10;
+        }
+
+        /* Kontainer bergerigi tajam */
+        .p5-container {
+            background: #000;
+            border: 4px solid #e0000b;
+            clip-path: polygon(1% 0%, 100% 2%, 98% 100%, 0% 98%);
+            position: relative;
+        }
+        .p5-container::after {
+            content: '';
+            position: absolute;
+            top: 3px; right: 3px; bottom: 3px; left: 3px;
+            background: #111;
+            clip-path: polygon(2% 4%, 96% 3%, 98% 94%, 4% 96%);
+            z-index: -1;
+        }
+
+        /* Input Form */
+        .p5-input {
+            background: #fff;
+            color: #000;
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0 #e0000b;
+            transform: skewX(-3deg);
+            border-radius: 0;
+            font-weight: bold;
+        }
+        .p5-input:focus {
+            outline: none;
+            background: #ffe6e6;
+            box-shadow: 4px 4px 0 #000;
+        }
+        .p5-input:disabled {
+            background: #555;
+            color: #222;
+            box-shadow: 4px 4px 0 #222;
+            cursor: not-allowed;
+            border-color: #333;
+        }
+
+        /* Tombol Utama */
+        .p5-btn {
+            background: #e0000b;
+            color: #fff;
+            border: 2px solid #fff;
+            transform: skewX(-10deg) rotate(-1deg);
+            box-shadow: -3px 3px 0 #000;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+        .p5-btn:hover:not(:disabled) {
+            background: #fff;
+            color: #e0000b;
+            box-shadow: -4px 4px 0 #e0000b;
+            transform: skewX(-10deg) rotate(0deg) scale(1.02);
+        }
+        .p5-btn:disabled {
+            background: #333;
+            color: #777;
+            border-color: #555;
+            box-shadow: none;
+        }
+
+        /* Tabel Dashboard */
+        .p5-table th {
+            background: #e0000b;
+            color: #fff;
+            font-family: 'Anton', sans-serif;
+            text-transform: uppercase;
+            border-bottom: 3px solid #fff;
+            letter-spacing: 1px;
+        }
+        .p5-table tr { border-bottom: 1px solid #333; transition: all 0.2s; }
+        .p5-table tr:hover { background: rgba(224, 0, 11, 0.2); }
+        .p5-table td { color: #ddd; }
+        .p5-table .td-highlight { color: #e0000b; font-weight: bold; font-family: 'Anton', sans-serif; font-size: 1.2rem;}
+
+        /* Pesan Notifikasi (merah/kuning) */
+        .status-box {
+            clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%);
+            transform: rotate(-1deg);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid #e0000b; }
+        ::-webkit-scrollbar-thumb { background: #e0000b; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="top-right-decor hidden md:block">SMAN 8 JAKARTA LOG</div>
+
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- HEADER -->
+        <div class="text-center mb-8 relative">
+            <h1 class="text-5xl md:text-6xl text-red-600 mb-2 transform -rotate-2 drop-shadow-[3px_3px_0_#fff]">TICKETING SOAL</h1>
+            <p class="font-anton text-xl tracking-widest text-gray-400 transform skew-x-[-10deg]">METAVERSE OPERATION // MATHEMATICS</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Bagian Kiri: Form User -->
-            <div class="border p-5 rounded-lg bg-blue-50 shadow-sm">
-                <h2 class="text-xl font-semibold mb-4 text-blue-900">Pilih Soal Kamu</h2>
-                <form id="ticket-form">
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium text-gray-700">Nama Penjawab</label>
-                        <input type="text" id="nama" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required placeholder="Masukkan nama kamu...">
+        <!-- Status & Notifikasi -->
+        <div id="status-message" class="status-box mb-8 p-4 text-center font-bold text-2xl font-anton uppercase hidden border-4 border-black">
+            <!-- Teks diisi lewat JS -->
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- KIRI: Form User -->
+            <div class="lg:col-span-5 p5-container p-6 shadow-[8px_8px_0_#000]">
+                <h2 class="text-3xl text-white mb-6 transform -rotate-2 drop-shadow-[2px_2px_0_#e0000b]">TAKE YOUR TARGET</h2>
+                
+                <form id="ticket-form" class="flex flex-col gap-5">
+                    <div>
+                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">CODENAME (NAMA)</label>
+                        <input type="text" id="nama" class="w-full p-3 p5-input" required placeholder="Masukkan namamu...">
                     </div>
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium text-gray-700">Nomor Absen</label>
-                        <input type="number" id="absen" min="1" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required placeholder="Contoh: 15">
+                    <div>
+                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">ID NUMBER (ABSEN)</label>
+                        <input type="number" id="absen" min="1" class="w-full p-3 p5-input" required placeholder="Contoh: 15">
                     </div>
-                    <div class="mb-5">
-                        <label class="block mb-1 font-medium text-gray-700">Pilih Nomor Soal</label>
-                        <select id="nomor-soal" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed transition" required>
-                            <option value="" disabled selected>-- Memuat Soal... --</option>
+                    <div>
+                        <label class="block mb-2 font-bold text-red-500 font-anton text-lg tracking-wider">TARGET (NO. SOAL)</label>
+                        <select id="nomor-soal" class="w-full p-3 p5-input cursor-pointer" required>
+                            <option value="" disabled selected>-- SECURING DATA... --</option>
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">*Soal yang sudah dipilih orang lain tidak akan muncul.</p>
+                        <p class="text-xs text-gray-400 mt-2 font-sans italic">*Target yang sudah diamankan tidak akan muncul.</p>
                     </div>
-                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white font-semibold p-2 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">Ambil Soal</button>
+                    <button type="submit" id="submit-btn" class="mt-4 p-4 text-2xl font-anton p5-btn w-full">AMBIL SOAL</button>
                 </form>
             </div>
 
-            <!-- Bagian Kanan: Live Dashboard -->
-            <div class="border p-5 rounded-lg bg-green-50 shadow-sm">
-                <h2 class="text-xl font-semibold mb-4 text-green-900">Daftar Penjawab (Live)</h2>
-                <div class="overflow-y-auto max-h-80 bg-white border rounded">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="sticky top-0 bg-green-200">
+            <!-- KANAN: Live Dashboard -->
+            <div class="lg:col-span-7 p5-container p-6 shadow-[8px_8px_0_#000]">
+                <h2 class="text-3xl text-white mb-6 transform rotate-1 drop-shadow-[2px_2px_0_#e0000b]">PHANTOM OPERATIVES</h2>
+                
+                <div class="overflow-y-auto max-h-[400px] border-2 border-red-600 bg-black p-1">
+                    <table class="w-full text-left border-collapse p5-table">
+                        <thead class="sticky top-0 z-10">
                             <tr>
-                                <th class="p-3 border-b text-center w-20">No. Soal</th>
-                                <th class="p-3 border-b">Nama</th>
-                                <th class="p-3 border-b text-center w-24">Absen</th>
+                                <th class="p-4 text-center w-24">NO. SOAL</th>
+                                <th class="p-4">CODENAME</th>
+                                <th class="p-4 text-center w-24">ABSEN</th>
                             </tr>
                         </thead>
                         <tbody id="dashboard-list">
                             <tr>
-                                <td colspan="3" class="p-4 text-center text-gray-500">Memuat data...</td>
+                                <td colspan="3" class="p-6 text-center text-gray-500 font-bold font-anton tracking-widest text-xl">INTERCEPTING SIGNALS...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -62,46 +192,48 @@
         </div>
 
         <!-- Tombol Buka Admin -->
-        <div class="mt-8 text-center">
-            <button id="btn-show-admin" class="text-gray-400 hover:text-gray-600 text-sm font-medium transition">Akses Admin</button>
+        <div class="mt-12 text-right relative z-20">
+            <button id="btn-show-admin" class="font-anton text-gray-600 hover:text-red-500 text-lg tracking-widest transition uppercase">>>> Access Admin Override</button>
         </div>
 
-        <!-- Panel Admin (Tersembunyi by default) -->
-        <div id="admin-panel" class="hidden mt-4 p-5 border border-gray-300 rounded-lg bg-gray-100 shadow-inner">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">Panel Kontrol Admin</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                
-                <div class="bg-white p-4 rounded border">
-                    <label class="block mb-2 font-medium text-gray-700 text-sm">Total Pertanyaan:</label>
+        <!-- Panel Admin -->
+        <div id="admin-panel" class="hidden mt-6 p5-container p-6 border-white bg-gray-900 shadow-[5px_5px_0_#e0000b]">
+            <h2 class="text-2xl text-red-500 mb-6 font-anton">NAVIGATOR CONTROLS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Total Soal -->
+                <div class="bg-black p-4 border-2 border-gray-700">
+                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">SET MAX TARGETS</label>
                     <div class="flex gap-2">
-                        <input type="number" id="total-soal-input" class="border p-2 rounded w-full focus:ring focus:ring-gray-200 text-sm">
-                        <button id="btn-update-soal" class="bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-800 text-sm">Set</button>
+                        <input type="number" id="total-soal-input" class="w-full p-2 p5-input text-center">
+                        <button id="btn-update-soal" class="p-2 bg-gray-200 text-black font-anton font-bold hover:bg-white transition border-2 border-black">SET</button>
                     </div>
                 </div>
 
-                <div class="bg-white p-4 rounded border">
-                    <label class="block mb-2 font-medium text-gray-700 text-sm">Kontrol Akses Form:</label>
-                    <div class="flex gap-2">
-                        <button id="btn-open" class="flex-1 bg-green-600 text-white px-2 py-2 rounded font-semibold hover:bg-green-700 transition text-sm">Buka (5s)</button>
-                        <button id="btn-close" class="flex-1 bg-red-600 text-white px-2 py-2 rounded font-semibold hover:bg-red-700 transition text-sm">Tutup</button>
+                <!-- Form Control -->
+                <div class="bg-black p-4 border-2 border-gray-700">
+                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">SYSTEM LOCK</label>
+                    <div class="flex flex-col gap-2">
+                        <button id="btn-open" class="p-2 bg-white text-black border-2 border-red-600 font-anton hover:bg-red-600 hover:text-white transition">BREACH (BUKA 5s)</button>
+                        <button id="btn-close" class="p-2 bg-red-600 text-white font-anton hover:bg-red-800 transition">LOCKDOWN (TUTUP)</button>
                     </div>
                 </div>
 
-                <div class="bg-white p-4 rounded border flex flex-col justify-center">
-                    <label class="block mb-2 font-medium text-gray-700 text-sm">Database:</label>
-                    <button id="btn-reset" class="bg-gray-900 text-white px-4 py-2 rounded font-semibold hover:bg-black transition text-sm">Hapus Semua Responden</button>
+                <!-- Reset Data -->
+                <div class="bg-black p-4 border-2 border-gray-700 flex flex-col justify-center">
+                    <label class="block mb-3 font-bold text-gray-300 font-anton tracking-wider">WIPE PALACE DATA</label>
+                    <button id="btn-reset" class="p-3 bg-red-900 border-2 border-red-500 text-white font-anton hover:bg-red-600 transition shadow-[3px_3px_0_#000]">ERASE ALL LOGS</button>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE SDK & LOGIC -->
+    <!-- FIREBASE SDK & LOGIC (Tetap sama seperti sebelumnya) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-        // Firebase Config Kamu
+        // GANTI INI DENGAN FIREBASE CONFIG KAMU JIKA BERBEDA
         const firebaseConfig = {
             apiKey: "AIzaSyCJaHDENyiCeStP7gJMxN4Ck7bFB7eHbdY",
             authDomain: "mtkticketing.firebaseapp.com",
@@ -119,7 +251,7 @@
 
         // State Global
         let totalSoal = 0;
-        let isLocked = true; // Default locked until config loaded
+        let isLocked = true;
         let claimedTickets = [];
         let countdownInterval;
 
@@ -138,7 +270,6 @@
         const inputTotalSoal = document.getElementById("total-soal-input");
         const btnUpdateSoal = document.getElementById("btn-update-soal");
         
-        // Admin Buttons
         const btnOpen = document.getElementById("btn-open");
         const btnClose = document.getElementById("btn-close");
         const btnReset = document.getElementById("btn-reset");
@@ -157,10 +288,10 @@
             inputAbsen.disabled = false;
             selectSoal.disabled = false;
             btnSubmit.disabled = false;
-            btnSubmit.innerText = "Ambil Soal";
+            btnSubmit.innerText = "AMBIL SOAL";
         }
 
-        // 1. Sinkronisasi Konfigurasi Admin (Real-time & Countdown logic)
+        // 1. Sinkronisasi Konfigurasi Admin (Real-time & Countdown)
         onSnapshot(configDoc, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
@@ -169,47 +300,42 @@
                 const unlockTime = data.unlockTime || 0;
                 
                 inputTotalSoal.value = totalSoal;
-                
-                // Hentikan interval countdown sebelumnya jika ada perubahan mendadak
                 clearInterval(countdownInterval);
 
                 if (isLocked) {
-                    // JIKA FORM DITUTUP
-                    statusMessage.classList.remove("hidden", "bg-yellow-100", "text-yellow-700", "border-yellow-400");
-                    statusMessage.classList.add("bg-red-100", "text-red-700", "border-red-400");
-                    statusMessage.innerText = "Pengisian ditutup oleh Admin.";
+                    // LOCKED STATE - TEMA MERAH/HITAM P5
+                    statusMessage.classList.remove("hidden", "bg-yellow-400", "text-black");
+                    statusMessage.classList.add("bg-red-600", "text-white");
+                    statusMessage.innerText = "SYSTEM LOCKDOWN ACTIVE";
                     
                     disableFormInputs();
-                    btnSubmit.innerText = "Form Ditutup";
+                    btnSubmit.innerText = "ACCESS DENIED";
                     
-                    // Reset isi form jika ada yang lagi ngetik
                     form.reset();
                     updateDropdown();
                 } else {
-                    // JIKA FORM BERSTATUS DIBUKA (Cek waktu unlock)
                     const now = Date.now();
                     if (now < unlockTime) {
-                        // Jika saat ini belum melewati waktu unlock -> Hitung Mundur
+                        // COUNTDOWN STATE - TEMA KUNING (WARNING)
                         disableFormInputs();
-                        btnSubmit.innerText = "Bersiaplah...";
+                        btnSubmit.innerText = "PREPARING BREACH...";
                         
-                        statusMessage.classList.remove("hidden", "bg-red-100", "text-red-700", "border-red-400");
-                        statusMessage.classList.add("bg-yellow-100", "text-yellow-700", "border-yellow-400");
+                        statusMessage.classList.remove("hidden", "bg-red-600", "text-white");
+                        statusMessage.classList.add("bg-yellow-400", "text-black");
                         
-                        // Menjalankan Timer secara visual tiap detik
                         countdownInterval = setInterval(() => {
                             const timeLeft = Math.ceil((unlockTime - Date.now()) / 1000);
                             if (timeLeft > 0) {
-                                statusMessage.innerText = `Form akan dibuka dalam ${timeLeft}...`;
+                                statusMessage.innerText = `INFILTRATION IN: 00:0${timeLeft}`;
                             } else {
                                 clearInterval(countdownInterval);
                                 enableFormInputs();
                                 statusMessage.classList.add("hidden");
                                 updateDropdown();
                             }
-                        }, 250); // Loop cepat agar mulus
+                        }, 250); 
                     } else {
-                        // Waktu sudah normal terbuka
+                        // OPEN STATE
                         enableFormInputs();
                         statusMessage.classList.add("hidden");
                         updateDropdown();
@@ -220,7 +346,7 @@
             }
         });
 
-        // 2. Sinkronisasi Data Penjawab (Real-time)
+        // 2. Sinkronisasi Data Penjawab (Dashboard Live)
         onSnapshot(ticketsCol, (snapshot) => {
             claimedTickets = [];
             dashboard.innerHTML = "";
@@ -234,15 +360,14 @@
             dataDocs.sort((a, b) => a.id - b.id);
             
             if (dataDocs.length === 0) {
-                dashboard.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-500">Belum ada yang memilih soal.</td></tr>`;
+                dashboard.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-600 font-anton text-xl tracking-widest">NO TARGETS SECURED YET.</td></tr>`;
             } else {
                 dataDocs.forEach((data) => {
                     const tr = document.createElement("tr");
-                    tr.classList.add("hover:bg-green-100", "transition");
                     tr.innerHTML = `
-                        <td class="p-3 border-b text-center font-bold text-green-800">${data.id}</td>
-                        <td class="p-3 border-b text-gray-800">${data.nama}</td>
-                        <td class="p-3 border-b text-center text-gray-600">${data.absen}</td>
+                        <td class="p-4 text-center td-highlight text-xl">${data.id}</td>
+                        <td class="p-4 font-bold tracking-wider">${data.nama.toUpperCase()}</td>
+                        <td class="p-4 text-center text-gray-400 font-bold">${data.absen}</td>
                     `;
                     dashboard.appendChild(tr);
                 });
@@ -250,24 +375,24 @@
             updateDropdown();
         });
 
-        // Fungsi memperbarui dropdown
+        // Fungsi Filter Dropdown
         function updateDropdown() {
             const currentValue = selectSoal.value;
-            selectSoal.innerHTML = '<option value="" disabled selected>-- Pilih Nomor Soal --</option>';
+            selectSoal.innerHTML = '<option value="" disabled selected>-- SELECT TARGET --</option>';
             
             let availableCount = 0;
             for (let i = 1; i <= totalSoal; i++) {
                 if (!claimedTickets.includes(i)) {
                     const option = document.createElement("option");
                     option.value = i;
-                    option.textContent = `Soal No. ${i}`;
+                    option.textContent = `TARGET NO. ${i}`;
                     selectSoal.appendChild(option);
                     availableCount++;
                 }
             }
 
             if (availableCount === 0 && !isLocked) {
-                selectSoal.innerHTML = '<option value="" disabled selected>Semua soal habis terambil!</option>';
+                selectSoal.innerHTML = '<option value="" disabled selected>ALL TARGETS SECURED!</option>';
             }
             
             if (currentValue && !claimedTickets.includes(parseInt(currentValue))) {
@@ -275,7 +400,7 @@
             }
         }
 
-        // 3. Handle Submit Form User
+        // 3. Submit Form
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (inputNama.disabled || selectSoal.disabled) return;
@@ -284,11 +409,10 @@
             const absen = inputAbsen.value;
             const soalDipilih = selectSoal.value;
 
-            if (!soalDipilih) return alert("Silakan pilih nomor soal yang tersedia.");
+            if (!soalDipilih) return alert("PILIH TARGET YANG VALID!");
 
-            // Matikan tombol sementara agar tidak double klik
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Mengirim...";
+            btnSubmit.innerText = "HACKING...";
 
             try {
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
@@ -298,11 +422,12 @@
                 });
                 form.reset();
             } catch (error) {
-                console.error("Error saving data:", error);
-                alert("Gagal mengambil soal, pastikan koneksi internet stabil.");
+                alert("KONEKSI METAVERSE TERPUTUS. COBA LAGI.");
             } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Ambil Soal";
+                if(!isLocked) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "AMBIL SOAL";
+                }
             }
         });
 
@@ -311,12 +436,13 @@
         // ==========================================
 
         btnShowAdmin.addEventListener("click", () => {
-            const password = prompt("Masukkan Password Admin:");
+            const password = prompt("ENTER OVERRIDE PASSWORD:");
+            // Password telah di set ke ikhlas2809
             if (password === "ikhlas2809") {
                 adminPanel.classList.remove("hidden");
                 btnShowAdmin.classList.add("hidden");
             } else if (password !== null) {
-                alert("Password salah!");
+                alert("ACCESS DENIED.");
             }
         });
 
@@ -324,41 +450,26 @@
             const newVal = parseInt(inputTotalSoal.value);
             if (newVal > 0) {
                 await updateDoc(configDoc, { totalSoal: newVal });
-                alert("Total soal berhasil diupdate!");
-            } else {
-                alert("Masukkan angka yang valid!");
             }
         });
 
-        // BUKA FORM (Dengan Delay 5 Detik)
         btnOpen.addEventListener("click", async () => {
-            try {
-                // Set unlockTime ke 5000ms (5 detik) dari waktu sekarang
-                const targetTime = Date.now() + 5000;
-                await updateDoc(configDoc, { 
-                    isLocked: false,
-                    unlockTime: targetTime
-                });
-            } catch (e) {
-                alert("Gagal mengupdate status database.");
-            }
+            const targetTime = Date.now() + 5000;
+            await updateDoc(configDoc, { 
+                isLocked: false,
+                unlockTime: targetTime
+            });
         });
 
-        // TUTUP FORM (Langsung Instan)
         btnClose.addEventListener("click", async () => {
-            try {
-                await updateDoc(configDoc, { isLocked: true });
-            } catch (e) {
-                alert("Gagal menutup form.");
-            }
+            await updateDoc(configDoc, { isLocked: true });
         });
 
-        // HAPUS RESPONDEN (Tombol Terpisah)
         btnReset.addEventListener("click", async () => {
-            const confirmReset = confirm("Peringatan: Aksi ini akan MENGHAPUS SEMUA DATA PENJAWAB. Lanjutkan?");
+            const confirmReset = confirm("WARNING: THIS WILL WIPE ALL STOLEN TARGETS. CONTINUE?");
             if (!confirmReset) return;
 
-            btnReset.innerText = "Menghapus Data...";
+            btnReset.innerText = "ERASING...";
             btnReset.disabled = true;
 
             try {
@@ -367,14 +478,9 @@
                 querySnapshot.forEach((document) => {
                     deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                 });
-                
                 await Promise.all(deletePromises);
-                alert("Seluruh data penjawab telah direset.");
-            } catch (error) {
-                console.error("Error Reset:", error);
-                alert("Terjadi kesalahan saat menghapus data.");
             } finally {
-                btnReset.innerText = "Hapus Semua Responden";
+                btnReset.innerText = "ERASE ALL LOGS";
                 btnReset.disabled = false;
             }
         });
