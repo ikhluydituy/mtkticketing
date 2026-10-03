@@ -154,13 +154,13 @@
                 </div>
             </div>
 
-            <!-- Kolom Khusus Admin: Salin Format (nomor pilihan_nama_absen) -->
+            <!-- Kolom Khusus Admin: Salin Format [nomor pilihan.nama (nomor absen)] -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Format Salin Cepat (nomor_pilihan_nama_absen)</label>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Format Salin Cepat [nomor pilihan.nama (nomor absen)]</label>
                     <button id="btn-copy-format" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition font-medium">Salin Teks</button>
                 </div>
-                <textarea id="admin-export-textarea" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none" readonly placeholder="Data akan muncul otomatis di sini..."></textarea>
+                <textarea id="admin-export-textarea" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none" readonly placeholder="Data akan muncul otomatis di sini..."></textarea>
             </div>
         </div>
     </main>
@@ -386,6 +386,7 @@
             dashboard.innerHTML = "";
             const dataDocs = [];
             let exportLines = [];
+            let myActiveClaim = false;
 
             snapshot.forEach((doc) => {
                 const docData = doc.data();
@@ -393,11 +394,31 @@
                 dataDocs.push({ id: soalNo, ...docData });
                 claimedTickets.push(soalNo);
 
-                exportLines.push(`${soalNo}_${docData.nama}_${docData.absen}`);
+                exportLines.push(`${soalNo}. ${docData.nama} (${docData.absen})`);
+
+                // Cek apakah device ini sudah punya klaim aktif di server
+                if (docData.deviceToken === deviceToken) {
+                    myActiveClaim = true;
+                }
             });
+
+            // LOGIKA 1 DEVICE = 1 KLAIM AKTIF
+            if (myActiveClaim && !isAdminLoggedIn) {
+                selectSiswa.disabled = true;
+                selectSoal.disabled = true;
+                btnSubmit.disabled = true;
+                btnSubmit.innerText = "Soal Telah Diamankan di HP Ini";
+            } else if (!isLocked || isAdminLoggedIn) {
+                // Jika belum ambil dan form dibuka, nyalakan kembali inputnya
+                if (!selectSiswa.disabled && !isAdminLoggedIn && !isLocked) {
+                    // Biarkan tetap aktif
+                } else if(!isLocked && !isAdminLoggedIn) {
+                    enableFormInputs();
+                }
+            }
             
             dataDocs.sort((a, b) => a.id - b.id);
-            exportLines.sort((a, b) => parseInt(a.split('_')[0]) - parseInt(b.split('_')[0]));
+            exportLines.sort((a, b) => parseInt(a) - parseInt(b));
             exportTextarea.value = exportLines.join('\n');
             
             if (dataDocs.length === 0) {
@@ -432,7 +453,10 @@
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists() && (docSnap.data().deviceToken === deviceToken || isAdminLoggedIn)) {
                     await deleteDoc(docRef);
-                    showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan.`, "success");
+                    showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan. HP ini sekarang bisa memilih soal lain.`, "success");
+                    if (!isAdminLoggedIn) {
+                        enableFormInputs();
+                    }
                 } else {
                     showToast("Aksi ditolak.", "error");
                 }
@@ -462,17 +486,6 @@
             }
         }
 
-        async function checkAlreadyClaimed(absen) {
-            const querySnapshot = await getDocs(ticketsCol);
-            let already = false;
-            querySnapshot.forEach((doc) => {
-                if (parseInt(doc.data().absen) === parseInt(absen)) {
-                    already = true;
-                }
-            });
-            return already;
-        }
-
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             if ((selectSiswa.disabled || selectSoal.disabled) && !isAdminLoggedIn) return;
@@ -487,12 +500,6 @@
 
             const selectedSiswaObj = siswaList.find(s => s.absen === absenVal);
             const namaSiswa = selectedSiswaObj ? selectedSiswaObj.nama : "Unknown";
-
-            const hasTaken = await checkAlreadyClaimed(absenVal);
-            if (hasTaken && !isAdminLoggedIn) {
-                showToast(`Siswa ${namaSiswa} (Absen ${absenVal}) sudah mengambil satu soal!`, "warning");
-                return;
-            }
 
             btnSubmit.disabled = true;
             btnSubmit.innerText = "Mengamankan Soal...";
@@ -513,12 +520,11 @@
                     });
                 });
 
-                // Jika BERHASIL: baru reset seluruh form (termasuk nama siswa)
-                form.reset();
+                // Berhasil mengamankan soal, form dikunci untuk device ini sampai dibatalkan
                 showToast(`Berhasil mengamankan Soal No. ${soalDipilih} untuk ${namaSiswa}!`, "success");
             } catch (error) {
                 if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
-                    // Jika GAGAL (keduluan orang lain): HANYA reset dropdown nomor soal saja, NAMA SISWA TETAP ADA!
+                    // Gagal karena direbut orang: Dropdown nomor soal di-reset, tapi NAMA SISWA TETAP ADA
                     selectSoal.value = ""; 
                     showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain. Silakan pilih nomor lain.`, "error");
                 } else {
@@ -526,7 +532,14 @@
                 }
                 updateDropdown();
             } finally {
-                if(!isLocked || isAdminLoggedIn) {
+                // Kembalikan tombol jika gagal, atau biarkan terkunci jika sukses
+                const snapshotCheck = await getDocs(ticketsCol);
+                let stillClaimed = false;
+                snapshotCheck.forEach(d => {
+                    if (d.data().deviceToken === deviceToken) stillClaimed = true;
+                });
+
+                if (!stillClaimed && (!isLocked || isAdminLoggedIn)) {
                     btnSubmit.disabled = false;
                     btnSubmit.innerText = "Ambil Soal";
                 }
