@@ -154,10 +154,10 @@
                 </div>
             </div>
 
-            <!-- Kolom Khusus Admin: Salin Format [nomor pilihan.nama (nomor absen)] -->
+            <!-- Kolom Khusus Admin: Salin Format (nomor pilihan.nama (nomor absen)) -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Format Salin Cepat [nomor pilihan.nama (nomor absen)]</label>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Format Salin Cepat (nomor pilihan.nama (nomor absen))</label>
                     <button id="btn-copy-format" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition font-medium">Salin Teks</button>
                 </div>
                 <textarea id="admin-export-textarea" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none" readonly placeholder="Data akan muncul otomatis di sini..."></textarea>
@@ -394,8 +394,8 @@
                 dataDocs.push({ id: soalNo, ...docData });
                 claimedTickets.push(soalNo);
 
-                // Format salin: [nomor pilihan.nama (nomor absen)]
-                exportLines.push(`[${soalNo}. ${docData.nama} (${docData.absen})]`);
+                // Format salin: nomor pilihan.nama (nomor absen) -> Tanpa tanda kurung siku []
+                exportLines.push(`${soalNo}.${docData.nama} (${docData.absen})`);
 
                 if (docData.deviceToken === deviceToken) {
                     myActiveClaim = true;
