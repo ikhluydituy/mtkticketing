@@ -10,7 +10,6 @@
         /* TEMA PERSONA 5 */
         body {
             background-color: #0a0a0a;
-            /* Pola titik-titik (halftone) samar di background */
             background-image: radial-gradient(#333 1px, transparent 1px);
             background-size: 15px 15px;
             font-family: 'Special Elite', monospace;
@@ -21,105 +20,54 @@
         h1, h2, .font-marker { font-family: 'Permanent Marker', cursive; }
         .font-anton { font-family: 'Anton', sans-serif; letter-spacing: 1px; }
 
-        /* Dekorasi Kanan Atas */
         .top-right-decor {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            background: #000;
-            color: #fff;
+            position: absolute; top: 20px; right: 30px;
+            background: #000; color: #fff;
             font-family: 'Permanent Marker', cursive;
-            padding: 5px 15px;
-            font-size: 20px;
-            transform: rotate(4deg);
-            border: 3px solid #fff;
-            box-shadow: -4px 4px 0 #e0000b;
-            z-index: 10;
+            padding: 5px 15px; font-size: 20px;
+            transform: rotate(4deg); border: 3px solid #fff;
+            box-shadow: -4px 4px 0 #e0000b; z-index: 10;
         }
 
-        /* Kontainer bergerigi tajam */
         .p5-container {
-            background: #000;
-            border: 4px solid #e0000b;
+            background: #000; border: 4px solid #e0000b;
             clip-path: polygon(1% 0%, 100% 2%, 98% 100%, 0% 98%);
             position: relative;
         }
         .p5-container::after {
-            content: '';
-            position: absolute;
+            content: ''; position: absolute;
             top: 3px; right: 3px; bottom: 3px; left: 3px;
-            background: #111;
-            clip-path: polygon(2% 4%, 96% 3%, 98% 94%, 4% 96%);
+            background: #111; clip-path: polygon(2% 4%, 96% 3%, 98% 94%, 4% 96%);
             z-index: -1;
         }
 
-        /* Input Form */
         .p5-input {
-            background: #fff;
-            color: #000;
-            border: 3px solid #000;
-            box-shadow: 4px 4px 0 #e0000b;
-            transform: skewX(-3deg);
-            border-radius: 0;
-            font-weight: bold;
+            background: #fff; color: #000; border: 3px solid #000;
+            box-shadow: 4px 4px 0 #e0000b; transform: skewX(-3deg);
+            border-radius: 0; font-weight: bold;
         }
-        .p5-input:focus {
-            outline: none;
-            background: #ffe6e6;
-            box-shadow: 4px 4px 0 #000;
-        }
-        .p5-input:disabled {
-            background: #555;
-            color: #222;
-            box-shadow: 4px 4px 0 #222;
-            cursor: not-allowed;
-            border-color: #333;
-        }
+        .p5-input:focus { outline: none; background: #ffe6e6; box-shadow: 4px 4px 0 #000; }
+        .p5-input:disabled { background: #555; color: #222; box-shadow: 4px 4px 0 #222; cursor: not-allowed; border-color: #333; }
 
-        /* Tombol Utama */
         .p5-btn {
-            background: #e0000b;
-            color: #fff;
-            border: 2px solid #fff;
-            transform: skewX(-10deg) rotate(-1deg);
-            box-shadow: -3px 3px 0 #000;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
+            background: #e0000b; color: #fff; border: 2px solid #fff;
+            transform: skewX(-10deg) rotate(-1deg); box-shadow: -3px 3px 0 #000;
+            text-transform: uppercase; transition: all 0.2s ease;
         }
         .p5-btn:hover:not(:disabled) {
-            background: #fff;
-            color: #e0000b;
-            box-shadow: -4px 4px 0 #e0000b;
+            background: #fff; color: #e0000b; box-shadow: -4px 4px 0 #e0000b;
             transform: skewX(-10deg) rotate(0deg) scale(1.02);
         }
-        .p5-btn:disabled {
-            background: #333;
-            color: #777;
-            border-color: #555;
-            box-shadow: none;
-        }
+        .p5-btn:disabled { background: #333; color: #777; border-color: #555; box-shadow: none; }
 
-        /* Tabel Dashboard */
-        .p5-table th {
-            background: #e0000b;
-            color: #fff;
-            font-family: 'Anton', sans-serif;
-            text-transform: uppercase;
-            border-bottom: 3px solid #fff;
-            letter-spacing: 1px;
-        }
+        .p5-table th { background: #e0000b; color: #fff; font-family: 'Anton', sans-serif; border-bottom: 3px solid #fff; letter-spacing: 1px; }
         .p5-table tr { border-bottom: 1px solid #333; transition: all 0.2s; }
         .p5-table tr:hover { background: rgba(224, 0, 11, 0.2); }
         .p5-table td { color: #ddd; }
         .p5-table .td-highlight { color: #e0000b; font-weight: bold; font-family: 'Anton', sans-serif; font-size: 1.2rem;}
 
-        /* Pesan Notifikasi (merah/kuning) */
-        .status-box {
-            clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%);
-            transform: rotate(-1deg);
-        }
+        .status-box { clip-path: polygon(0 5%, 100% 0, 98% 95%, 2% 100%); transform: rotate(-1deg); }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #000; border-left: 1px solid #e0000b; }
         ::-webkit-scrollbar-thumb { background: #e0000b; }
@@ -138,9 +86,7 @@
         </div>
 
         <!-- Status & Notifikasi -->
-        <div id="status-message" class="status-box mb-8 p-4 text-center font-bold text-2xl font-anton uppercase hidden border-4 border-black">
-            <!-- Teks diisi lewat JS -->
-        </div>
+        <div id="status-message" class="status-box mb-8 p-4 text-center font-bold text-2xl font-anton uppercase hidden border-4 border-black"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
@@ -162,7 +108,6 @@
                         <select id="nomor-soal" class="w-full p-3 p5-input cursor-pointer" required>
                             <option value="" disabled selected>-- SECURING DATA... --</option>
                         </select>
-                        <p class="text-xs text-gray-400 mt-2 font-sans italic">*Target yang sudah diamankan tidak akan muncul.</p>
                     </div>
                     <button type="submit" id="submit-btn" class="mt-4 p-4 text-2xl font-anton p5-btn w-full">AMBIL SOAL</button>
                 </form>
@@ -182,23 +127,24 @@
                             </tr>
                         </thead>
                         <tbody id="dashboard-list">
-                            <tr>
-                                <td colspan="3" class="p-6 text-center text-gray-500 font-bold font-anton tracking-widest text-xl">INTERCEPTING SIGNALS...</td>
-                            </tr>
+                            <tr><td colspan="3" class="p-6 text-center text-gray-500 font-bold font-anton tracking-widest text-xl">INTERCEPTING SIGNALS...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Tombol Buka Admin -->
+        <!-- Tombol Login Admin -->
         <div class="mt-12 text-right relative z-20">
-            <button id="btn-show-admin" class="font-anton text-gray-600 hover:text-red-500 text-lg tracking-widest transition uppercase">>>> Access Admin Override</button>
+            <button id="btn-login-admin" class="font-anton text-gray-600 hover:text-red-500 text-lg tracking-widest transition uppercase">>>> AUTHENTICATE ADMIN</button>
         </div>
 
         <!-- Panel Admin -->
         <div id="admin-panel" class="hidden mt-6 p5-container p-6 border-white bg-gray-900 shadow-[5px_5px_0_#e0000b]">
-            <h2 class="text-2xl text-red-500 mb-6 font-anton">NAVIGATOR CONTROLS</h2>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl text-red-500 font-anton">NAVIGATOR CONTROLS</h2>
+                <button id="btn-logout" class="text-xs bg-gray-700 hover:bg-red-600 text-white font-anton px-3 py-1 border border-white">LOGOUT ADMIN</button>
+            </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Total Soal -->
@@ -228,12 +174,18 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK & LOGIC (Tetap sama seperti sebelumnya) -->
+    <!-- FIREBASE SDK & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        // Import Module Authentication
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-        // GANTI INI DENGAN FIREBASE CONFIG KAMU JIKA BERBEDA
+        // ==========================================
+        // KONFIGURASI ADMIN EMAIL (GANTI DENGAN EMAIL ASLI KAMU!)
+        // ==========================================
+        const ADMIN_EMAIL = "emailkamu@gmail.com"; 
+
         const firebaseConfig = {
             apiKey: "AIzaSyCJaHDENyiCeStP7gJMxN4Ck7bFB7eHbdY",
             authDomain: "mtkticketing.firebaseapp.com",
@@ -245,53 +197,91 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        // Setup Auth
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
         const ticketsCol = collection(db, "tickets");
         const configDoc = doc(db, "settings", "main");
 
-        // State Global
         let totalSoal = 0;
         let isLocked = true;
         let claimedTickets = [];
         let countdownInterval;
 
-        // DOM Elements
         const form = document.getElementById("ticket-form");
         const inputNama = document.getElementById("nama");
         const inputAbsen = document.getElementById("absen");
         const selectSoal = document.getElementById("nomor-soal");
-        
         const dashboard = document.getElementById("dashboard-list");
         const statusMessage = document.getElementById("status-message");
         const btnSubmit = document.getElementById("submit-btn");
         
         const adminPanel = document.getElementById("admin-panel");
-        const btnShowAdmin = document.getElementById("btn-show-admin");
+        const btnLoginAdmin = document.getElementById("btn-login-admin");
+        const btnLogout = document.getElementById("btn-logout");
         const inputTotalSoal = document.getElementById("total-soal-input");
         const btnUpdateSoal = document.getElementById("btn-update-soal");
-        
         const btnOpen = document.getElementById("btn-open");
         const btnClose = document.getElementById("btn-close");
         const btnReset = document.getElementById("btn-reset");
 
-        // Fungsi Kunci Input
+        // ==========================================
+        // SISTEM AUTENTIKASI ADMIN
+        // ==========================================
+        
+        // Memantau status login (berjalan otomatis setiap kali web dibuka)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.email === ADMIN_EMAIL) {
+                    // Jika admin berhasil login
+                    adminPanel.classList.remove("hidden");
+                    btnLoginAdmin.classList.add("hidden");
+                } else {
+                    // Jika orang lain yang mencoba login
+                    alert("ACCESS DENIED: Email ini bukan otoritas Admin.");
+                    signOut(auth); // Langsung logout otomatis
+                    adminPanel.classList.add("hidden");
+                    btnLoginAdmin.classList.remove("hidden");
+                }
+            } else {
+                // Jika belum login
+                adminPanel.classList.add("hidden");
+                btnLoginAdmin.classList.remove("hidden");
+            }
+        });
+
+        // Tombol Login dipencet
+        btnLoginAdmin.addEventListener("click", () => {
+            signInWithPopup(auth, provider).catch((error) => {
+                console.error("Gagal Login:", error);
+                alert("Login dibatalkan atau terjadi kesalahan jaringan.");
+            });
+        });
+
+        // Tombol Logout dipencet
+        btnLogout.addEventListener("click", () => {
+            signOut(auth).then(() => {
+                alert("Berhasil keluar dari mode Admin.");
+            });
+        });
+
+        // ==========================================
+        // LOGIK FORM & DATABASE (Sama seperti sebelumnya)
+        // ==========================================
+
         function disableFormInputs() {
-            inputNama.disabled = true;
-            inputAbsen.disabled = true;
-            selectSoal.disabled = true;
-            btnSubmit.disabled = true;
+            inputNama.disabled = true; inputAbsen.disabled = true;
+            selectSoal.disabled = true; btnSubmit.disabled = true;
         }
 
-        // Fungsi Buka Input
         function enableFormInputs() {
-            inputNama.disabled = false;
-            inputAbsen.disabled = false;
-            selectSoal.disabled = false;
-            btnSubmit.disabled = false;
+            inputNama.disabled = false; inputAbsen.disabled = false;
+            selectSoal.disabled = false; btnSubmit.disabled = false;
             btnSubmit.innerText = "AMBIL SOAL";
         }
 
-        // 1. Sinkronisasi Konfigurasi Admin (Real-time & Countdown)
         onSnapshot(configDoc, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
@@ -303,23 +293,18 @@
                 clearInterval(countdownInterval);
 
                 if (isLocked) {
-                    // LOCKED STATE - TEMA MERAH/HITAM P5
                     statusMessage.classList.remove("hidden", "bg-yellow-400", "text-black");
                     statusMessage.classList.add("bg-red-600", "text-white");
                     statusMessage.innerText = "SYSTEM LOCKDOWN ACTIVE";
-                    
                     disableFormInputs();
                     btnSubmit.innerText = "ACCESS DENIED";
-                    
                     form.reset();
                     updateDropdown();
                 } else {
                     const now = Date.now();
                     if (now < unlockTime) {
-                        // COUNTDOWN STATE - TEMA KUNING (WARNING)
                         disableFormInputs();
                         btnSubmit.innerText = "PREPARING BREACH...";
-                        
                         statusMessage.classList.remove("hidden", "bg-red-600", "text-white");
                         statusMessage.classList.add("bg-yellow-400", "text-black");
                         
@@ -335,7 +320,6 @@
                             }
                         }, 250); 
                     } else {
-                        // OPEN STATE
                         enableFormInputs();
                         statusMessage.classList.add("hidden");
                         updateDropdown();
@@ -346,19 +330,15 @@
             }
         });
 
-        // 2. Sinkronisasi Data Penjawab (Dashboard Live)
         onSnapshot(ticketsCol, (snapshot) => {
             claimedTickets = [];
             dashboard.innerHTML = "";
-            
             const dataDocs = [];
             snapshot.forEach((doc) => {
                 dataDocs.push({ id: parseInt(doc.id), ...doc.data() });
                 claimedTickets.push(parseInt(doc.id));
             });
-            
             dataDocs.sort((a, b) => a.id - b.id);
-            
             if (dataDocs.length === 0) {
                 dashboard.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-600 font-anton text-xl tracking-widest">NO TARGETS SECURED YET.</td></tr>`;
             } else {
@@ -375,11 +355,9 @@
             updateDropdown();
         });
 
-        // Fungsi Filter Dropdown
         function updateDropdown() {
             const currentValue = selectSoal.value;
             selectSoal.innerHTML = '<option value="" disabled selected>-- SELECT TARGET --</option>';
-            
             let availableCount = 0;
             for (let i = 1; i <= totalSoal; i++) {
                 if (!claimedTickets.includes(i)) {
@@ -390,35 +368,27 @@
                     availableCount++;
                 }
             }
-
             if (availableCount === 0 && !isLocked) {
                 selectSoal.innerHTML = '<option value="" disabled selected>ALL TARGETS SECURED!</option>';
             }
-            
             if (currentValue && !claimedTickets.includes(parseInt(currentValue))) {
                 selectSoal.value = currentValue;
             }
         }
 
-        // 3. Submit Form
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (inputNama.disabled || selectSoal.disabled) return;
-
             const nama = inputNama.value.trim();
             const absen = inputAbsen.value;
             const soalDipilih = selectSoal.value;
-
             if (!soalDipilih) return alert("PILIH TARGET YANG VALID!");
 
             btnSubmit.disabled = true;
             btnSubmit.innerText = "HACKING...";
-
             try {
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
-                    nama: nama,
-                    absen: absen,
-                    timestamp: new Date()
+                    nama: nama, absen: absen, timestamp: new Date()
                 });
                 form.reset();
             } catch (error) {
@@ -431,47 +401,21 @@
             }
         });
 
-        // ==========================================
-        // LOGIK ADMIN
-        // ==========================================
-
-        btnShowAdmin.addEventListener("click", () => {
-            const password = prompt("ENTER OVERRIDE PASSWORD:");
-            // Password telah di set ke ikhlas2809
-            if (password === "ikhlas2809") {
-                adminPanel.classList.remove("hidden");
-                btnShowAdmin.classList.add("hidden");
-            } else if (password !== null) {
-                alert("ACCESS DENIED.");
-            }
-        });
-
         btnUpdateSoal.addEventListener("click", async () => {
             const newVal = parseInt(inputTotalSoal.value);
-            if (newVal > 0) {
-                await updateDoc(configDoc, { totalSoal: newVal });
-            }
+            if (newVal > 0) { await updateDoc(configDoc, { totalSoal: newVal }); }
         });
-
         btnOpen.addEventListener("click", async () => {
             const targetTime = Date.now() + 5000;
-            await updateDoc(configDoc, { 
-                isLocked: false,
-                unlockTime: targetTime
-            });
+            await updateDoc(configDoc, { isLocked: false, unlockTime: targetTime });
         });
-
         btnClose.addEventListener("click", async () => {
             await updateDoc(configDoc, { isLocked: true });
         });
-
         btnReset.addEventListener("click", async () => {
             const confirmReset = confirm("WARNING: THIS WILL WIPE ALL STOLEN TARGETS. CONTINUE?");
             if (!confirmReset) return;
-
-            btnReset.innerText = "ERASING...";
-            btnReset.disabled = true;
-
+            btnReset.innerText = "ERASING..."; btnReset.disabled = true;
             try {
                 const querySnapshot = await getDocs(ticketsCol);
                 const deletePromises = [];
@@ -480,8 +424,7 @@
                 });
                 await Promise.all(deletePromises);
             } finally {
-                btnReset.innerText = "ERASE ALL LOGS";
-                btnReset.disabled = false;
+                btnReset.innerText = "ERASE ALL LOGS"; btnReset.disabled = false;
             }
         });
     </script>
