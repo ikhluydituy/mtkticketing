@@ -394,7 +394,7 @@
                 dataDocs.push({ id: soalNo, ...docData });
                 claimedTickets.push(soalNo);
 
-                // Format salin: [nomor pilihan.nama (nomor absen)] -> Contoh: [1. Abdul Danish (1)]
+                // Format salin: [nomor pilihan.nama (nomor absen)]
                 exportLines.push(`[${soalNo}. ${docData.nama} (${docData.absen})]`);
 
                 if (docData.deviceToken === deviceToken) {
