@@ -22,20 +22,20 @@
                 <form id="ticket-form">
                     <div class="mb-4">
                         <label class="block mb-1 font-medium text-gray-700">Nama Penjawab</label>
-                        <input type="text" id="nama" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200" required placeholder="Masukkan nama kamu...">
+                        <input type="text" id="nama" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required placeholder="Masukkan nama kamu...">
                     </div>
                     <div class="mb-4">
                         <label class="block mb-1 font-medium text-gray-700">Nomor Absen</label>
-                        <input type="number" id="absen" min="1" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200" required placeholder="Contoh: 15">
+                        <input type="number" id="absen" min="1" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required placeholder="Contoh: 15">
                     </div>
                     <div class="mb-5">
                         <label class="block mb-1 font-medium text-gray-700">Pilih Nomor Soal</label>
-                        <select id="nomor-soal" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200" required>
+                        <select id="nomor-soal" class="w-full border border-gray-300 p-2 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-200 disabled:cursor-not-allowed" required>
                             <option value="" disabled selected>-- Memuat Soal... --</option>
                         </select>
                         <p class="text-xs text-gray-500 mt-1">*Soal yang sudah dipilih orang lain tidak akan muncul.</p>
                     </div>
-                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white font-semibold p-2 rounded hover:bg-blue-700 transition">Ambil Soal</button>
+                    <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white font-semibold p-2 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">Ambil Soal</button>
                 </form>
             </div>
 
@@ -87,23 +87,25 @@
 
     <!-- FIREBASE SDK & LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // Import Firebase v12.19.0
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-        // ==========================================
-        // GANTI BAGIAN INI DENGAN CONFIG FIREBASE MU
-        // ==========================================
+        // Firebase Config dari project kamu
         const firebaseConfig = {
-            apiKey: "API_KEY_KAMU",
-            authDomain: "PROJECT_ID.firebaseapp.com",
-            projectId: "PROJECT_ID",
-            storageBucket: "PROJECT_ID.appspot.com",
-            messagingSenderId: "MESSAGING_ID",
-            appId: "APP_ID"
+            apiKey: "AIzaSyCJaHDENyiCeStP7gJMxN4Ck7bFB7eHbdY",
+            authDomain: "mtkticketing.firebaseapp.com",
+            projectId: "mtkticketing",
+            storageBucket: "mtkticketing.firebasestorage.app",
+            messagingSenderId: "31572951375",
+            appId: "1:31572951375:web:fb1b28ca6f60cfae89053a",
+            measurementId: "G-FSWCH59XLD"
         };
 
-        // Inisialisasi Firebase
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
         // Referensi Koleksi & Dokumen
@@ -117,7 +119,10 @@
 
         // DOM Elements
         const form = document.getElementById("ticket-form");
+        const inputNama = document.getElementById("nama");
+        const inputAbsen = document.getElementById("absen");
         const selectSoal = document.getElementById("nomor-soal");
+        
         const dashboard = document.getElementById("dashboard-list");
         const statusMessage = document.getElementById("status-message");
         const btnSubmit = document.getElementById("submit-btn");
@@ -132,16 +137,21 @@
         onSnapshot(configDoc, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
-                totalSoal = data.totalSoal || 20; // Default 20 jika kosong
+                totalSoal = data.totalSoal || 20; 
                 isLocked = data.isLocked || false;
                 
                 inputTotalSoal.value = totalSoal;
 
-                // Handle Lock/Unlock UI
+                // Handle Lock/Unlock UI & Matikan Input
                 if (isLocked) {
                     statusMessage.classList.remove("hidden");
+                    
+                    // Matikan input agar tidak bisa head start
+                    inputNama.disabled = true;
+                    inputAbsen.disabled = true;
+                    selectSoal.disabled = true;
                     btnSubmit.disabled = true;
-                    btnSubmit.classList.add("opacity-50", "cursor-not-allowed");
+                    
                     btnSubmit.innerText = "Form Ditutup";
                     
                     btnToggleLock.innerText = "Buka Form Pengisian";
@@ -149,8 +159,13 @@
                     btnToggleLock.classList.replace("hover:bg-red-700", "hover:bg-green-700");
                 } else {
                     statusMessage.classList.add("hidden");
+                    
+                    // Nyalakan input kembali
+                    inputNama.disabled = false;
+                    inputAbsen.disabled = false;
+                    selectSoal.disabled = false;
                     btnSubmit.disabled = false;
-                    btnSubmit.classList.remove("opacity-50", "cursor-not-allowed");
+                    
                     btnSubmit.innerText = "Ambil Soal";
                     
                     btnToggleLock.innerText = "Tutup & Reset Data";
@@ -159,7 +174,6 @@
                 }
                 updateDropdown();
             } else {
-                // Buat dokumen setting pertama kali jika belum ada di database
                 setDoc(configDoc, { totalSoal: 20, isLocked: false });
             }
         });
@@ -175,7 +189,6 @@
                 claimedTickets.push(parseInt(doc.id));
             });
             
-            // Urutkan berdasarkan nomor soal (kecil ke besar)
             dataDocs.sort((a, b) => a.id - b.id);
             
             if (dataDocs.length === 0) {
@@ -195,7 +208,7 @@
             updateDropdown();
         });
 
-        // Fungsi memperbarui dropdown (Filter soal yang sudah diambil)
+        // Fungsi memperbarui dropdown
         function updateDropdown() {
             const currentValue = selectSoal.value;
             selectSoal.innerHTML = '<option value="" disabled selected>-- Pilih Nomor Soal --</option>';
@@ -211,11 +224,10 @@
                 }
             }
 
-            if (availableCount === 0) {
+            if (availableCount === 0 && !isLocked) {
                 selectSoal.innerHTML = '<option value="" disabled selected>Semua soal habis terambil!</option>';
             }
             
-            // Simpan pilihan user saat ini jika belum diambil orang lain saat database update
             if (currentValue && !claimedTickets.includes(parseInt(currentValue))) {
                 selectSoal.value = currentValue;
             }
@@ -226,14 +238,13 @@
             e.preventDefault();
             if (isLocked) return alert("Maaf, pengisian saat ini sedang ditutup.");
 
-            const nama = document.getElementById("nama").value.trim();
-            const absen = document.getElementById("absen").value;
-            const soalDipilih = document.getElementById("nomor-soal").value;
+            const nama = inputNama.value.trim();
+            const absen = inputAbsen.value;
+            const soalDipilih = selectSoal.value;
 
             if (!soalDipilih) return alert("Silakan pilih nomor soal yang tersedia.");
 
             try {
-                // Menjadikan nomor soal sebagai ID dokumen, sehingga terjamin unik (1 soal = 1 orang)
                 await setDoc(doc(ticketsCol, soalDipilih.toString()), {
                     nama: nama,
                     absen: absen,
@@ -252,8 +263,8 @@
 
         btnShowAdmin.addEventListener("click", () => {
             const password = prompt("Masukkan Password Admin:");
-            // Ganti "admin123" dengan password yang kamu inginkan
-            if (password === "admin123") {
+            // Password telah diubah menjadi ikhlas2809
+            if (password === "ikhlas2809") {
                 adminPanel.classList.remove("hidden");
                 btnShowAdmin.classList.add("hidden");
             } else if (password !== null) {
@@ -261,7 +272,6 @@
             }
         });
 
-        // Update jumlah maksimum soal
         btnUpdateSoal.addEventListener("click", async () => {
             const newVal = parseInt(inputTotalSoal.value);
             if (newVal > 0) {
@@ -272,25 +282,20 @@
             }
         });
 
-        // Tombol aksi ganda: Buka form ATAU Tutup & Reset
         btnToggleLock.addEventListener("click", async () => {
             try {
                 if (isLocked) {
-                    // Jika ditutup -> BUKA
                     await updateDoc(configDoc, { isLocked: false });
                 } else {
-                    // Jika dibuka -> KONFIRMASI -> TUTUP & RESET
                     const confirmReset = confirm("Peringatan: Aksi ini akan MENUTUP form sekaligus MENGHAPUS SEMUA DATA PENJAWAB. Lanjutkan?");
                     if (!confirmReset) return;
 
-                    // Mengambil semua tiket & menghapusnya satu per satu
                     const querySnapshot = await getDocs(ticketsCol);
                     const deletePromises = [];
                     querySnapshot.forEach((document) => {
                         deletePromises.push(deleteDoc(doc(db, "tickets", document.id)));
                     });
                     
-                    // Tunggu proses hapus selesai, baru update status jadi locked
                     await Promise.all(deletePromises);
                     await updateDoc(configDoc, { isLocked: true });
                     alert("Form berhasil ditutup dan seluruh data penjawab telah direset.");
