@@ -48,7 +48,7 @@
             <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold tracking-tight text-white">Pilih Soal Kamu</h2>
-                    <p class="text-sm text-slate-400 mt-1">Cari nama atau nomor absen, lalu pilih nomor soal.</p>
+                    <p class="text-sm text-slate-400 mt-1">Cari nama siswa, lalu pilih nomor soal yang tersedia.</p>
                 </div>
 
                 <form id="ticket-form" class="space-y-5">
@@ -63,23 +63,18 @@
                         <input type="hidden" id="selected-absen" required>
                     </div>
 
-                    <!-- Searchable Select untuk Nomor Soal -->
-                    <div class="relative">
-                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nomor Soal</label>
-                        <input type="text" id="soal-search" placeholder="Ketik nomor soal..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition" autocomplete="off">
+                    <!-- Pilihan Nomor Soal via Grid Chips -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nomor Soal</label>
+                            <span id="selected-soal-indicator" class="text-xs font-medium text-blue-400">Belum dipilih</span>
+                        </div>
                         
-                        <div id="soal-dropdown-list" class="absolute left-0 right-0 mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-56 overflow-y-auto z-50 hidden divide-y divide-slate-800">
-                            <!-- Diisi via JS -->
+                        <!-- Grid Daftar Soal -->
+                        <div id="soal-grid" class="grid grid-cols-5 gap-2 p-3 bg-slate-950 border border-slate-800 rounded-xl max-h-56 overflow-y-auto">
+                            <span class="col-span-5 text-xs text-slate-500 text-center py-4 italic">Memuat nomor soal...</span>
                         </div>
                         <input type="hidden" id="selected-soal" required>
-                        
-                        <!-- List Kecil: Soal yang belum ada yang ngambil -->
-                        <div class="mt-2.5">
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Soal Tersedia:</span>
-                            <div id="available-soal-chips" class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto p-1 bg-slate-950/40 border border-slate-900 rounded-lg">
-                                <span class="text-xs text-slate-600 italic p-1">Memuat data...</span>
-                            </div>
-                        </div>
                     </div>
 
                     <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-blue-600/20 disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed text-sm">
@@ -270,10 +265,9 @@
         const siswaDropdownList = document.getElementById("siswa-dropdown-list");
         const selectedAbsenInput = document.getElementById("selected-absen");
 
-        const soalSearch = document.getElementById("soal-search");
-        const soalDropdownList = document.getElementById("soal-dropdown-list");
+        const soalGrid = document.getElementById("soal-grid");
         const selectedSoalInput = document.getElementById("selected-soal");
-        const availableSoalChips = document.getElementById("available-soal-chips");
+        const selectedSoalIndicator = document.getElementById("selected-soal-indicator");
 
         const dashboard = document.getElementById("dashboard-list");
         const statusMessage = document.getElementById("status-message");
@@ -329,79 +323,58 @@
             siswaDropdownList.classList.remove("hidden");
         });
 
-        // Fungsi Render Searchable Dropdown Soal & List Chip
-        function updateSoalDropdownAndChips() {
-            const keyword = soalSearch.value.toLowerCase();
-            soalDropdownList.innerHTML = "";
-            availableSoalChips.innerHTML = "";
-
-            let availableCount = 0;
-            let filteredCount = 0;
-
-            for (let i = 1; i <= totalSoal; i++) {
-                if (!claimedTickets.includes(i)) {
-                    availableCount++;
-                    const soalLabel = `Soal No. ${i}`;
-                    
-                    // Render Chip untuk List Kecil
-                    const chip = document.createElement("button");
-                    chip.type = "button";
-                    chip.className = "px-2 py-1 bg-slate-900 hover:bg-blue-600/30 hover:border-blue-500/50 border border-slate-800 text-slate-300 text-xs rounded-md transition font-medium";
-                    chip.textContent = i;
-                    chip.onclick = () => {
-                        soalSearch.value = soalLabel;
-                        selectedSoalInput.value = i;
-                        soalDropdownList.classList.add("hidden");
-                    };
-                    availableSoalChips.appendChild(chip);
-
-                    // Render Item Dropdown Pencarian
-                    if (soalLabel.toLowerCase().includes(keyword) || i.toString().includes(keyword)) {
-                        filteredCount++;
-                        const item = document.createElement("div");
-                        item.className = "p-3 text-xs text-slate-200 hover:bg-slate-800 cursor-pointer transition flex justify-between items-center";
-                        item.innerHTML = `<span>${soalLabel}</span>`;
-                        item.onclick = () => {
-                            soalSearch.value = soalLabel;
-                            selectedSoalInput.value = i;
-                            soalDropdownList.classList.add("hidden");
-                        };
-                        soalDropdownList.appendChild(item);
-                    }
-                }
-            }
-
-            if (availableCount === 0) {
-                availableSoalChips.innerHTML = `<span class="text-xs text-slate-500 italic p-1">Semua soal telah habis dipilih!</span>`;
-            }
-
-            if (filteredCount === 0 && availableCount > 0) {
-                soalDropdownList.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">Soal tidak ditemukan / sudah diambil</div>`;
-            }
-        }
-
-        soalSearch.addEventListener("focus", () => {
-            if (!soalSearch.disabled) {
-                updateSoalDropdownAndChips();
-                soalDropdownList.classList.remove("hidden");
-            }
-        });
-
-        soalSearch.addEventListener("input", (e) => {
-            selectedSoalInput.value = "";
-            updateSoalDropdownAndChips();
-            soalDropdownList.classList.remove("hidden");
-        });
-
         // Tutup dropdown jika klik di luar
         document.addEventListener("click", (e) => {
             if (!e.target.closest("#siswa-search") && !e.target.closest("#siswa-dropdown-list")) {
                 siswaDropdownList.classList.add("hidden");
             }
-            if (!e.target.closest("#soal-search") && !e.target.closest("#soal-dropdown-list") && !e.target.closest("#available-soal-chips")) {
-                soalDropdownList.classList.add("hidden");
-            }
         });
+
+        // Fungsi Render Grid Soal Chips
+        function renderSoalGrid() {
+            soalGrid.innerHTML = "";
+            const currentSelected = parseInt(selectedSoalInput.value);
+
+            if (totalSoal === 0) {
+                soalGrid.innerHTML = `<span class="col-span-5 text-xs text-slate-500 text-center py-4 italic">Belum ada soal diset.</span>`;
+                return;
+            }
+
+            for (let i = 1; i <= totalSoal; i++) {
+                const isClaimed = claimedTickets.includes(i);
+                const isSelected = (currentSelected === i);
+
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "py-2.5 rounded-lg text-xs font-semibold transition flex items-center justify-center border";
+
+                if (isClaimed) {
+                    // Visual Soal Sudah Diambil (Redup, Dicoret, Tidak Bisa Diklik)
+                    btn.className += " bg-slate-900/40 border-slate-900 text-slate-600 line-through cursor-not-allowed opacity-50";
+                    btn.disabled = true;
+                    btn.textContent = i;
+                } else if (isSelected) {
+                    // Visual Soal Sedang Dipilih
+                    btn.className += " bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-600/30 scale-105";
+                    btn.textContent = i;
+                    btn.onclick = () => selectSoal(i);
+                } else {
+                    // Visual Soal Tersedia
+                    btn.className += " bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300 hover:border-slate-700 cursor-pointer";
+                    btn.textContent = i;
+                    btn.onclick = () => selectSoal(i);
+                }
+
+                soalGrid.appendChild(btn);
+            }
+        }
+
+        function selectSoal(num) {
+            selectedSoalInput.value = num;
+            selectedSoalIndicator.textContent = `Soal No. ${num} dipilih`;
+            selectedSoalIndicator.className = "text-xs font-semibold text-emerald-400";
+            renderSoalGrid();
+        }
 
         function showToast(message, type = "success") {
             const container = document.getElementById("toast-container");
@@ -450,13 +423,11 @@
         function disableFormInputs() {
             if (isAdminLoggedIn) return;
             siswaSearch.disabled = true;
-            soalSearch.disabled = true;
             btnSubmit.disabled = true;
         }
 
         function enableFormInputs() {
             siswaSearch.disabled = false;
-            soalSearch.disabled = false;
             btnSubmit.disabled = false;
             btnSubmit.innerText = "Ambil Soal";
         }
@@ -477,7 +448,7 @@
                     statusMessage.classList.remove("hidden");
                     disableFormInputs();
                     btnSubmit.innerText = "Form Ditutup";
-                    updateSoalDropdownAndChips();
+                    renderSoalGrid();
                 } else if (!isLocked) {
                     const now = Date.now();
                     if (now < unlockTime && !isAdminLoggedIn) {
@@ -494,13 +465,13 @@
                                 clearInterval(countdownInterval);
                                 enableFormInputs();
                                 statusMessage.classList.add("hidden");
-                                updateSoalDropdownAndChips();
+                                renderSoalGrid();
                             }
                         }, 250); 
                     } else {
                         enableFormInputs();
                         statusMessage.classList.add("hidden");
-                        updateSoalDropdownAndChips();
+                        renderSoalGrid();
                     }
                 }
             } else {
@@ -532,7 +503,6 @@
 
             if (myActiveClaim && !isAdminLoggedIn) {
                 siswaSearch.disabled = true;
-                soalSearch.disabled = true;
                 btnSubmit.disabled = true;
                 btnSubmit.innerText = "Soal Telah Diamankan di Device Ini";
             } else if (!isLocked || isAdminLoggedIn) {
@@ -574,7 +544,7 @@
                     dashboard.appendChild(tr);
                 });
             }
-            updateSoalDropdownAndChips();
+            renderSoalGrid();
         });
 
         window.cancelClaim = async function(soalId) {
@@ -588,8 +558,9 @@
                         enableFormInputs();
                         siswaSearch.value = "";
                         selectedAbsenInput.value = "";
-                        soalSearch.value = "";
                         selectedSoalInput.value = "";
+                        selectedSoalIndicator.textContent = "Belum dipilih";
+                        selectedSoalIndicator.className = "text-xs font-medium text-blue-400";
                     }
                 } else {
                     showToast("Aksi ditolak.", "error");
@@ -601,13 +572,13 @@
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            if ((siswaSearch.disabled || soalSearch.disabled) && !isAdminLoggedIn) return;
+            if (siswaSearch.disabled && !isAdminLoggedIn) return;
             
             const absenVal = parseInt(selectedAbsenInput.value);
             const soalDipilih = parseInt(selectedSoalInput.value);
             
             if (!absenVal || !soalDipilih) {
-                showToast("Pilih nama siswa dan nomor soal yang valid dari daftar pencarian.", "warning");
+                showToast("Pilih nama siswa dari pencarian dan klik nomor soal yang diinginkan.", "warning");
                 return;
             }
 
@@ -641,13 +612,14 @@
                 showToast(`Berhasil mengamankan Soal No. ${soalDipilih} untuk ${namaSiswa}!`, "success");
             } catch (error) {
                 if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
-                    soalSearch.value = ""; 
                     selectedSoalInput.value = "";
+                    selectedSoalIndicator.textContent = "Belum dipilih";
+                    selectedSoalIndicator.className = "text-xs font-medium text-blue-400";
                     showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain. Silakan pilih nomor lain.`, "error");
                 } else {
                     showToast("Gagal mengirim data. Periksa koneksi.", "error");
                 }
-                updateSoalDropdownAndChips();
+                renderSoalGrid();
             } finally {
                 const snapshotCheck = await getDocs(ticketsCol);
                 let stillClaimed = false;
