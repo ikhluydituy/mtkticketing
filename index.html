@@ -48,22 +48,40 @@
             <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold tracking-tight text-white">Pilih Soal Kamu</h2>
-                    <p class="text-sm text-slate-400 mt-1">Pilih nama siswa dan nomor soal yang tersedia.</p>
+                    <p class="text-sm text-slate-400 mt-1">Cari nama atau nomor absen, lalu pilih nomor soal.</p>
                 </div>
 
                 <form id="ticket-form" class="space-y-5">
-                    <div>
-                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nama Siswa (Absen)</label>
-                        <select id="siswa-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition cursor-pointer" required>
-                            <option value="" disabled selected>-- Pilih Nama Kamu --</option>
-                        </select>
+                    <!-- Searchable Select untuk Nama Siswa -->
+                    <div class="relative">
+                        <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Cari / Pilih Nama Siswa (Absen)</label>
+                        <input type="text" id="siswa-search" placeholder="Ketik nama atau nomor absen..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition" autocomplete="off">
+                        
+                        <div id="siswa-dropdown-list" class="absolute left-0 right-0 mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-56 overflow-y-auto z-50 hidden divide-y divide-slate-800">
+                            <!-- Diisi via JS -->
+                        </div>
+                        <input type="hidden" id="selected-absen" required>
                     </div>
-                    <div>
+
+                    <!-- Searchable Select untuk Nomor Soal -->
+                    <div class="relative">
                         <label class="block mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Pilih Nomor Soal</label>
-                        <select id="nomor-soal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition cursor-pointer" required>
-                            <option value="" disabled selected>-- Memuat Daftar Soal --</option>
-                        </select>
+                        <input type="text" id="soal-search" placeholder="Ketik nomor soal..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-900/50 disabled:text-slate-600 transition" autocomplete="off">
+                        
+                        <div id="soal-dropdown-list" class="absolute left-0 right-0 mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-56 overflow-y-auto z-50 hidden divide-y divide-slate-800">
+                            <!-- Diisi via JS -->
+                        </div>
+                        <input type="hidden" id="selected-soal" required>
+                        
+                        <!-- List Kecil: Soal yang belum ada yang ngambil -->
+                        <div class="mt-2.5">
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Soal Tersedia:</span>
+                            <div id="available-soal-chips" class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto p-1 bg-slate-950/40 border border-slate-900 rounded-lg">
+                                <span class="text-xs text-slate-600 italic p-1">Memuat data...</span>
+                            </div>
+                        </div>
                     </div>
+
                     <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-blue-600/20 disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed text-sm">
                         Ambil Soal
                     </button>
@@ -195,7 +213,6 @@
         const ticketsCol = collection(db, "tickets");
         const configDoc = doc(db, "settings", "main");
 
-        // Daftar 36 siswa SMAN 8 Jakarta
         const siswaList = [
             { absen: 1, nama: "Abdul Danish" },
             { absen: 2, nama: "Ahmad Sauqy Murobby" },
@@ -244,13 +261,20 @@
         let totalSoal = 0;
         let isLocked = true;
         let claimedTickets = [];
-        let claimedAbsens = []; // Menyimpan daftar absen siswa yang sudah terdaftar
+        let claimedAbsens = [];
         let isAdminLoggedIn = false;
         let countdownInterval;
 
         const form = document.getElementById("ticket-form");
-        const selectSiswa = document.getElementById("siswa-select");
-        const selectSoal = document.getElementById("nomor-soal");
+        const siswaSearch = document.getElementById("siswa-search");
+        const siswaDropdownList = document.getElementById("siswa-dropdown-list");
+        const selectedAbsenInput = document.getElementById("selected-absen");
+
+        const soalSearch = document.getElementById("soal-search");
+        const soalDropdownList = document.getElementById("soal-dropdown-list");
+        const selectedSoalInput = document.getElementById("selected-soal");
+        const availableSoalChips = document.getElementById("available-soal-chips");
+
         const dashboard = document.getElementById("dashboard-list");
         const statusMessage = document.getElementById("status-message");
         const btnSubmit = document.getElementById("submit-btn");
@@ -266,16 +290,118 @@
         const exportTextarea = document.getElementById("admin-export-textarea");
         const btnCopyFormat = document.getElementById("btn-copy-format");
 
-        function populateSiswaDropdown() {
-            selectSiswa.innerHTML = '<option value="" disabled selected>-- Pilih Nama Kamu --</option>';
-            siswaList.forEach(s => {
-                const opt = document.createElement("option");
-                opt.value = s.absen;
-                opt.textContent = `${s.absen} - ${s.nama}`;
-                selectSiswa.appendChild(opt);
+        // Fungsi Render Searchable Dropdown Siswa
+        function renderSiswaDropdown(filterText = "") {
+            siswaDropdownList.innerHTML = "";
+            const keyword = filterText.toLowerCase();
+            const filtered = siswaList.filter(s => 
+                s.nama.toLowerCase().includes(keyword) || s.absen.toString().includes(keyword)
+            );
+
+            if (filtered.length === 0) {
+                siswaDropdownList.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">Nama tidak ditemukan</div>`;
+                return;
+            }
+
+            filtered.forEach(s => {
+                const item = document.createElement("div");
+                item.className = "p-3 text-xs text-slate-200 hover:bg-slate-800 cursor-pointer transition flex justify-between items-center";
+                item.innerHTML = `<span>${s.absen} - ${s.nama}</span>`;
+                item.onclick = () => {
+                    siswaSearch.value = `${s.absen} - ${s.nama}`;
+                    selectedAbsenInput.value = s.absen;
+                    siswaDropdownList.classList.add("hidden");
+                };
+                siswaDropdownList.appendChild(item);
             });
         }
-        populateSiswaDropdown();
+
+        siswaSearch.addEventListener("focus", () => {
+            if (!siswaSearch.disabled) {
+                renderSiswaDropdown(siswaSearch.value);
+                siswaDropdownList.classList.remove("hidden");
+            }
+        });
+
+        siswaSearch.addEventListener("input", (e) => {
+            selectedAbsenInput.value = "";
+            renderSiswaDropdown(e.target.value);
+            siswaDropdownList.classList.remove("hidden");
+        });
+
+        // Fungsi Render Searchable Dropdown Soal & List Chip
+        function updateSoalDropdownAndChips() {
+            const keyword = soalSearch.value.toLowerCase();
+            soalDropdownList.innerHTML = "";
+            availableSoalChips.innerHTML = "";
+
+            let availableCount = 0;
+            let filteredCount = 0;
+
+            for (let i = 1; i <= totalSoal; i++) {
+                if (!claimedTickets.includes(i)) {
+                    availableCount++;
+                    const soalLabel = `Soal No. ${i}`;
+                    
+                    // Render Chip untuk List Kecil
+                    const chip = document.createElement("button");
+                    chip.type = "button";
+                    chip.className = "px-2 py-1 bg-slate-900 hover:bg-blue-600/30 hover:border-blue-500/50 border border-slate-800 text-slate-300 text-xs rounded-md transition font-medium";
+                    chip.textContent = i;
+                    chip.onclick = () => {
+                        soalSearch.value = soalLabel;
+                        selectedSoalInput.value = i;
+                        soalDropdownList.classList.add("hidden");
+                    };
+                    availableSoalChips.appendChild(chip);
+
+                    // Render Item Dropdown Pencarian
+                    if (soalLabel.toLowerCase().includes(keyword) || i.toString().includes(keyword)) {
+                        filteredCount++;
+                        const item = document.createElement("div");
+                        item.className = "p-3 text-xs text-slate-200 hover:bg-slate-800 cursor-pointer transition flex justify-between items-center";
+                        item.innerHTML = `<span>${soalLabel}</span>`;
+                        item.onclick = () => {
+                            soalSearch.value = soalLabel;
+                            selectedSoalInput.value = i;
+                            soalDropdownList.classList.add("hidden");
+                        };
+                        soalDropdownList.appendChild(item);
+                    }
+                }
+            }
+
+            if (availableCount === 0) {
+                availableSoalChips.innerHTML = `<span class="text-xs text-slate-500 italic p-1">Semua soal telah habis dipilih!</span>`;
+            }
+
+            if (filteredCount === 0 && availableCount > 0) {
+                soalDropdownList.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">Soal tidak ditemukan / sudah diambil</div>`;
+            }
+        }
+
+        soalSearch.addEventListener("focus", () => {
+            if (!soalSearch.disabled) {
+                updateSoalDropdownAndChips();
+                soalDropdownList.classList.remove("hidden");
+            }
+        });
+
+        soalSearch.addEventListener("input", (e) => {
+            selectedSoalInput.value = "";
+            updateSoalDropdownAndChips();
+            soalDropdownList.classList.remove("hidden");
+        });
+
+        // Tutup dropdown jika klik di luar
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest("#siswa-search") && !e.target.closest("#siswa-dropdown-list")) {
+                siswaDropdownList.classList.add("hidden");
+            }
+            if (!e.target.closest("#soal-search") && !e.target.closest("#soal-dropdown-list") && !e.target.closest("#available-soal-chips")) {
+                soalDropdownList.classList.add("hidden");
+            }
+        });
 
         function showToast(message, type = "success") {
             const container = document.getElementById("toast-container");
@@ -323,14 +449,14 @@
 
         function disableFormInputs() {
             if (isAdminLoggedIn) return;
-            selectSiswa.disabled = true;
-            selectSoal.disabled = true;
+            siswaSearch.disabled = true;
+            soalSearch.disabled = true;
             btnSubmit.disabled = true;
         }
 
         function enableFormInputs() {
-            selectSiswa.disabled = false;
-            selectSoal.disabled = false;
+            siswaSearch.disabled = false;
+            soalSearch.disabled = false;
             btnSubmit.disabled = false;
             btnSubmit.innerText = "Ambil Soal";
         }
@@ -351,7 +477,7 @@
                     statusMessage.classList.remove("hidden");
                     disableFormInputs();
                     btnSubmit.innerText = "Form Ditutup";
-                    updateDropdown();
+                    updateSoalDropdownAndChips();
                 } else if (!isLocked) {
                     const now = Date.now();
                     if (now < unlockTime && !isAdminLoggedIn) {
@@ -368,13 +494,13 @@
                                 clearInterval(countdownInterval);
                                 enableFormInputs();
                                 statusMessage.classList.add("hidden");
-                                updateDropdown();
+                                updateSoalDropdownAndChips();
                             }
                         }, 250); 
                     } else {
                         enableFormInputs();
                         statusMessage.classList.add("hidden");
-                        updateDropdown();
+                        updateSoalDropdownAndChips();
                     }
                 }
             } else {
@@ -405,12 +531,12 @@
             });
 
             if (myActiveClaim && !isAdminLoggedIn) {
-                selectSiswa.disabled = true;
-                selectSoal.disabled = true;
+                siswaSearch.disabled = true;
+                soalSearch.disabled = true;
                 btnSubmit.disabled = true;
                 btnSubmit.innerText = "Soal Telah Diamankan di Device Ini";
             } else if (!isLocked || isAdminLoggedIn) {
-                if (!selectSiswa.disabled && !isAdminLoggedIn && !isLocked) {
+                if (!siswaSearch.disabled && !isAdminLoggedIn && !isLocked) {
                     // Biarkan aktif
                 } else if(!isLocked && !isAdminLoggedIn) {
                     enableFormInputs();
@@ -448,7 +574,7 @@
                     dashboard.appendChild(tr);
                 });
             }
-            updateDropdown();
+            updateSoalDropdownAndChips();
         });
 
         window.cancelClaim = async function(soalId) {
@@ -460,6 +586,10 @@
                     showToast(`Pilihan Soal No. ${soalId} berhasil dibatalkan. Device ini sekarang bisa memilih soal lain.`, "success");
                     if (!isAdminLoggedIn) {
                         enableFormInputs();
+                        siswaSearch.value = "";
+                        selectedAbsenInput.value = "";
+                        soalSearch.value = "";
+                        selectedSoalInput.value = "";
                     }
                 } else {
                     showToast("Aksi ditolak.", "error");
@@ -469,40 +599,18 @@
             }
         }
 
-        function updateDropdown() {
-            const currentValue = selectSoal.value;
-            selectSoal.innerHTML = '<option value="" disabled selected>-- Pilih Nomor Soal --</option>';
-            let availableCount = 0;
-            for (let i = 1; i <= totalSoal; i++) {
-                if (!claimedTickets.includes(i)) {
-                    const option = document.createElement("option");
-                    option.value = i;
-                    option.textContent = `Soal No. ${i}`;
-                    selectSoal.appendChild(option);
-                    availableCount++;
-                }
-            }
-            if (availableCount === 0 && !isLocked) {
-                selectSoal.innerHTML = '<option value="" disabled selected>Semua soal telah habis dipilih!</option>';
-            }
-            if (currentValue && !claimedTickets.includes(parseInt(currentValue))) {
-                selectSoal.value = currentValue;
-            }
-        }
-
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            if ((selectSiswa.disabled || selectSoal.disabled) && !isAdminLoggedIn) return;
+            if ((siswaSearch.disabled || soalSearch.disabled) && !isAdminLoggedIn) return;
             
-            const absenVal = parseInt(selectSiswa.value);
-            const soalDipilih = parseInt(selectSoal.value);
+            const absenVal = parseInt(selectedAbsenInput.value);
+            const soalDipilih = parseInt(selectedSoalInput.value);
             
             if (!absenVal || !soalDipilih) {
-                showToast("Pilih nama siswa dan nomor soal terlebih dahulu.", "warning");
+                showToast("Pilih nama siswa dan nomor soal yang valid dari daftar pencarian.", "warning");
                 return;
             }
 
-            // Validasi ketat: pastikan nama/absen tersebut belum mengambil soal lain di database
             if (claimedAbsens.includes(absenVal) && !isAdminLoggedIn) {
                 showToast("Nama siswa ini sudah tercatat mengambil soal!", "warning");
                 return;
@@ -533,12 +641,13 @@
                 showToast(`Berhasil mengamankan Soal No. ${soalDipilih} untuk ${namaSiswa}!`, "success");
             } catch (error) {
                 if (error.message === "ALREADY_CLAIMED" || error.code === "aborted") {
-                    selectSoal.value = ""; 
+                    soalSearch.value = ""; 
+                    selectedSoalInput.value = "";
                     showToast(`Gagal! Soal No. ${soalDipilih} sudah duluan diambil orang lain. Silakan pilih nomor lain.`, "error");
                 } else {
                     showToast("Gagal mengirim data. Periksa koneksi.", "error");
                 }
-                updateDropdown();
+                updateSoalDropdownAndChips();
             } finally {
                 const snapshotCheck = await getDocs(ticketsCol);
                 let stillClaimed = false;
